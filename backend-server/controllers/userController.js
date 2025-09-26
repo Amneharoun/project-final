@@ -92,12 +92,11 @@ const verify = async (req, res) => {
     return res.status(404).send({ message: "OTP introuvable" });
   }
   console.log("OTP Details", otpDetails);
-  console.log("OTP", typeof(otp));
-  
+  console.log("OTP", typeof (otp));
 
   if (otp != otpDetails.otp) {
     console.log("Code OTP invalide");
-    
+
     return res.status(406).send({ message: "Code OTP invalide" });
   }
 
@@ -200,7 +199,7 @@ const resetPassword = async (req, res) => {
     }
 
     console.log(otpDetails, otp);
-    
+
     if (otp != otpDetails.otp) {
       return res.status(406).send({ message: "OTP invalide" });
     }
@@ -309,7 +308,11 @@ const listeFournisseurs = async (req, res) => {
 // Récupérer le profil de l'utilisateur connecté
 const getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user).select("-motdepasse"); 
+    console.log("Authenticated user:", req.user);
+
+    const user = await User.findById(req.user.userId)
+      // .select("-__id -password -isVerified -createdAt -updatedAt -__v");
+      .select("name email role createdAt");
     if (!user) return res.status(404).json({ message: "Utilisateur introuvable" });
     res.json(user);
   } catch (err) {
@@ -322,4 +325,4 @@ const getProfile = async (req, res) => {
 
 
 
-module.exports = { register, verify, login, creerVente, getVentes, listeFournisseurs, ajouterFournisseur,forgotPassword,resetPassword, getProfile  };
+module.exports = { register, verify, login, creerVente, getVentes, listeFournisseurs, ajouterFournisseur, forgotPassword, resetPassword, getProfile };

@@ -28,8 +28,15 @@ Content-Type:application/json
 
 {
     "email": "thalaadam14@gmail.com",
-    "password": "1234"
+    "password": "12345"
 }
+
+### Profile
+GET http://localhost:5000/auth/profile
+Content-Type:application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGQyYTVhNWRlMWE1MGQ2MjRkZGFhNTEiLCJlbWFpbCI6InRoYWxhYWRhbTE0QGdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1ODg5NTAyNSwiZXhwIjoxNzU4OTgxNDI1fQ.BZIQkBlwnqVi3KO9wIlBiH1JEe0S8ovgowYE89c1OFw
+
+
 ###
 POST http://localhost:5000/auth/ventes
 Content-Type: application/json

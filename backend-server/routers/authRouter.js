@@ -1,7 +1,6 @@
 const express = require("express");
-const { register, login, verify, creerVente, getVentes, ajouterFournisseur, listeFournisseurs, forgotPassword, resetPassword, getProfile} = require("../controllers/userController");
-const auth = require("../middlewares/authMiddelware");
-
+const { register, login, verify, creerVente, getVentes, ajouterFournisseur, listeFournisseurs, forgotPassword, resetPassword, getProfile } = require("../controllers/userController");
+const authMiddleware = require("../middlewares/authMiddelware");
 const router = express.Router();
 
 // crer un route
@@ -17,11 +16,7 @@ router.get("/getVentes", getVentes);     // Voir l’historique
 router.post("/ajouterFournisseur", ajouterFournisseur);
 router.get("/listeFournisseurs", listeFournisseurs);
 
-router.get("/profile", getProfile);
-
-
-
-
+router.get("/profile", authMiddleware, getProfile);
 
 // router.get("/medicaments", auth(["admin", "pharmacien"]), getMedicaments);
 // router.post("/ventes", auth(["caissier", "pharmacien"]), creerVente);

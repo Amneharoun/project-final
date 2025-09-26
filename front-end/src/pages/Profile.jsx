@@ -6,7 +6,7 @@ export default function Profile() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/users/profile", {
+      .get("http://localhost:5000/auth/profile", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
       })
       .then((res) => setUser(res.data))
