@@ -18,6 +18,8 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Profile from './pages/Profile';
 import ExcelPage from './pages/Excelpage';
+import NouvelleVente from './pages/NouvelleVente';
+import ListeVentes from './pages/ListeVente';
 const App = () => {
   const [role, setRole] = useState(null);
 
@@ -51,6 +53,8 @@ const App = () => {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/excelpage" element={<ExcelPage />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/nouvellevente" element={<NouvelleVente />} />
+            <Route path="/listevente" element={<ListeVentes />} />
           </Routes>
         </Layout>
       </BrowserRouter>

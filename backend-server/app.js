@@ -32,7 +32,7 @@ mongoose
 // Routes
 app.use("/auth", authRouter);
 app.use("/medicaments", medicamentRouter);
-app.use("/vente", venteRouter);
+app.use("/ventes", venteRouter);
 app.use("/dashboard", dashbordRoute);
 app.use("/clients", clientRouter);
 app.use("/commandes", commandeRouter);

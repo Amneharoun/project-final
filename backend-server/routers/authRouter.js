@@ -1,5 +1,5 @@
 const express = require("express");
-const { register, login, verify, creerVente, getVentes, ajouterFournisseur, listeFournisseurs, forgotPassword, resetPassword, getProfile } = require("../controllers/userController");
+const { register, login, verify, ajouterFournisseur, listeFournisseurs, forgotPassword, resetPassword, getProfile } = require("../controllers/userController");
 const authMiddleware = require("../middlewares/authMiddelware");
 const router = express.Router();
 
@@ -10,8 +10,8 @@ router.patch("/email-verify", verify)
 router.post("/forgot-password", forgotPassword);
 router.patch("/reset-password", resetPassword);
 
-router.post("/ventes", creerVente);   // Ajouter une vente
-router.get("/getVentes", getVentes);     // Voir l’historique
+// router.post("/ventes", creerVente);   // Ajouter une vente
+// router.get("/getVentes", getVentes);     // Voir l’historique
 
 router.post("/ajouterFournisseur", ajouterFournisseur);
 router.get("/listeFournisseurs", listeFournisseurs);

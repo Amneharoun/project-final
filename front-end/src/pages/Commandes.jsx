@@ -8,7 +8,7 @@ export default function Commandes() {
   const [formData, setFormData] = useState({
     fournisseur: "",
     produits: [{ nom: "", quantite: 1 }],
-    statut: "En attente"
+    statut: "En attente",
   });
 
   useEffect(() => {
@@ -27,7 +27,9 @@ export default function Commandes() {
 
   const fetchFournisseurs = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/auth/listeFournisseurs");
+      const response = await axios.get(
+        "http://localhost:5000/auth/listeFournisseurs"
+      );
       setFournisseurs(response.data);
     } catch (error) {
       console.error("Erreur lors du chargement des fournisseurs:", error);
@@ -47,7 +49,9 @@ export default function Commandes() {
 
   const updateStatut = async (id, newStatut) => {
     try {
-      await axios.put(`http://localhost:5000/commandes/${id}/statut`, { statut: newStatut });
+      await axios.put(`http://localhost:5000/commandes/${id}/statut`, {
+        statut: newStatut,
+      });
       fetchCommandes();
     } catch (error) {
       console.error("Erreur lors de la mise à jour du statut:", error);
@@ -69,7 +73,7 @@ export default function Commandes() {
     setFormData({
       fournisseur: "",
       produits: [{ nom: "", quantite: 1 }],
-      statut: "En attente"
+      statut: "En attente",
     });
     setShowModal(false);
   };
@@ -77,7 +81,7 @@ export default function Commandes() {
   const addProduit = () => {
     setFormData({
       ...formData,
-      produits: [...formData.produits, { nom: "", quantite: 1 }]
+      produits: [...formData.produits, { nom: "", quantite: 1 }],
     });
   };
 
@@ -95,8 +99,8 @@ export default function Commandes() {
   const getStatutBadge = (statut) => {
     const badges = {
       "En attente": "bg-warning",
-      "Livrée": "bg-success",
-      "Annulée": "bg-danger"
+      Livrée: "bg-success",
+      Annulée: "bg-danger",
     };
     return badges[statut] || "bg-secondary";
   };
@@ -105,14 +109,10 @@ export default function Commandes() {
     <div className="container-fluid p-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2>Gestion des Commandes</h2>
-        <button 
-          className="btn btn-primary"
-          onClick={() => setShowModal(true)}
-        >
+        <button className="btn btn-success" onClick={() => setShowModal(true)}>
           + Nouvelle Commande
         </button>
       </div>
-
 
       {/* Table des commandes */}
       <div className="card shadow-sm">
@@ -136,38 +136,48 @@ export default function Commandes() {
                     <td>
                       <small>
                         {commande.produits.map((p, i) => (
-                          <div key={i}>{p.nom} (x{p.quantite})</div>
+                          <div key={i}>
+                            {p.nom} (x{p.quantite})
+                          </div>
                         ))}
                       </small>
                     </td>
                     <td>
-                      <span className={`badge ${getStatutBadge(commande.statut)}`}>
+                      <span
+                        className={`badge ${getStatutBadge(commande.statut)}`}
+                      >
                         {commande.statut}
                       </span>
                     </td>
-                    <td>
-                      {commande.statut === "En attente" && (
-                        <>
-                          <button
-                            className="btn btn-sm btn-success me-1"
-                            onClick={() => updateStatut(commande._id, "Livrée")}
-                          >
-                            Livrer
-                          </button>
-                          <button
-                            className="btn btn-sm btn-warning me-1"
-                            onClick={() => updateStatut(commande._id, "Annulée")}
-                          >
-                            Annuler
-                          </button>
-                        </>
-                      )}
-                      <button
-                        className="btn btn-sm btn-outline-danger"
-                        onClick={() => handleDelete(commande._id)}
-                      >
-                        Supprimer
-                      </button>
+                    <td className="text-center">
+                      <div className="btn-group btn-group-sm" role="group">
+                        {commande.statut === "En attente" && (
+                          <>
+                            <button
+                              className="btn btn-sm btn-success me-1"
+                              onClick={() =>
+                                updateStatut(commande._id, "Livrée")
+                              }
+                            >
+                              Livrer
+                            </button>
+                            <button
+                              className="btn btn-sm btn-warning me-1"
+                              onClick={() =>
+                                updateStatut(commande._id, "Annulée")
+                              }
+                            >
+                              Annuler
+                            </button>
+                          </>
+                        )}
+                        <button
+                          className="btn btn-danger"
+                          onClick={() => handleDelete(commande._id)}
+                        >
+                          Supprimer
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -179,7 +189,10 @@ export default function Commandes() {
 
       {/* Modal pour nouvelle commande */}
       {showModal && (
-        <div className="modal show d-block" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+        <div
+          className="modal show d-block"
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+        >
           <div className="modal-dialog modal-lg">
             <div className="modal-content">
               <div className="modal-header">
@@ -197,12 +210,19 @@ export default function Commandes() {
                     <select
                       className="form-select"
                       value={formData.fournisseur}
-                      onChange={(e) => setFormData({...formData, fournisseur: e.target.value})}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          fournisseur: e.target.value,
+                        })
+                      }
                       required
                     >
                       <option value="">Sélectionner un fournisseur</option>
                       {fournisseurs.map((f) => (
-                        <option key={f._id} value={f._id}>{f.nom}</option>
+                        <option key={f._id} value={f._id}>
+                          {f.nom}
+                        </option>
                       ))}
                     </select>
                   </div>
@@ -217,7 +237,9 @@ export default function Commandes() {
                             className="form-control"
                             placeholder="Nom du produit"
                             value={produit.nom}
-                            onChange={(e) => updateProduit(index, "nom", e.target.value)}
+                            onChange={(e) =>
+                              updateProduit(index, "nom", e.target.value)
+                            }
                             required
                           />
                         </div>
@@ -227,7 +249,13 @@ export default function Commandes() {
                             className="form-control"
                             placeholder="Quantité"
                             value={produit.quantite}
-                            onChange={(e) => updateProduit(index, "quantite", parseInt(e.target.value))}
+                            onChange={(e) =>
+                              updateProduit(
+                                index,
+                                "quantite",
+                                parseInt(e.target.value)
+                              )
+                            }
                             min="1"
                             required
                           />
@@ -255,7 +283,11 @@ export default function Commandes() {
                   </div>
                 </div>
                 <div className="modal-footer">
-                  <button type="button" className="btn btn-secondary" onClick={resetForm}>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={resetForm}
+                  >
                     Annuler
                   </button>
                   <button type="submit" className="btn btn-primary">

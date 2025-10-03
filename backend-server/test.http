@@ -38,14 +38,14 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGQyY
 
 
 ###
-POST http://localhost:5000/auth/ventes
+POST http://localhost:5000/ventes/ventes
 Content-Type: application/json
 
 {
   "medicaments": [
     {
-      "medicament": "68972a54794be053270f8639",
-      "quantite": 2,
+      "medicament": "68d6b0e5a75deca1b95a408c",
+      "quantite": 1,
       "prix": 4.5
     }
   ],
@@ -53,7 +53,7 @@ Content-Type: application/json
 }
 
 ###
-GET  http://localhost:5000/auth/getVentes
+GET  http://localhost:5000/ventes/getVentes
 
 ###
 POST http://localhost:5000/auth/ajouterFournisseur

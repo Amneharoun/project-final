@@ -62,15 +62,16 @@ export default function Clients() {
   };
 
   return (
-    <div className="container-fluid p-4">
+        <div className="container-fluid p-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2>Gestion des Clients</h2>
         <button 
-          className="btn btn-primary"
+          className="btn btn-success"
           onClick={() => setShowModal(true)}
         >
           + Nouveau Client
         </button>
+        
       </div>
 
       {/* Table des clients */}
@@ -96,19 +97,22 @@ export default function Clients() {
                         {client.historiqueAchats?.length || 0}
                       </span>
                     </td>
-                    <td>
+                  <td className="text-center">
+        <div className="btn-group btn-group-sm" role="group">
+
                       <button
-                        className="btn btn-sm btn-outline-primary me-2"
+                        className="btn btn-warning m-2"
                         onClick={() => openEditModal(client)}
                       >
                         Modifier
                       </button>
                       <button
-                        className="btn btn-sm btn-outline-danger"
+                        className="btn btn-danger m-2"
                         onClick={() => handleDelete(client._id)}
                       >
                         Supprimer
                       </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

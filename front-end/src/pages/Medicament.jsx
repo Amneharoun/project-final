@@ -131,26 +131,34 @@ const Medicaments = () => {
           </tr>
         </thead>
         <tbody>
-          {meds.map((med) => (
-            <tr key={med._id}>
-              <td>{med.nom}</td>
-              <td>{med.code}</td>
-              <td>{med.categorie}</td>
-              <td>{med.prix}</td>
-              <td>{med.stock}</td>
-              <td>{med.seuilAlerte}</td>
-              <td>{new Date(med.datePeremption).toLocaleDateString()}</td>
-              <td>
-                <button onClick={() => handleEdit(med)} className="btn btn-warning btn-sm me-2">
-                  Modifier
-                </button>
-                <button onClick={() => handleDelete(med._id)} className="btn btn-danger btn-sm">
-                  Supprimer
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
+  {meds.map((med) => (
+    <tr key={med._id}>
+      <td>{med.nom}</td>
+      <td>{med.code}</td>
+      <td>{med.categorie}</td>
+      <td>{med.prix}</td>
+      <td>{med.stock}</td>
+      <td>{med.seuilAlerte}</td>
+      <td>{new Date(med.datePeremption).toLocaleDateString()}</td>
+      <td className="text-center">
+        <div className="btn-group btn-group-sm" role="group">
+          <button
+            onClick={() => handleEdit(med)}
+            className="btn btn-warning m-2"
+          >
+            Modifier
+          </button>
+          <button
+            onClick={() => handleDelete(med._id)}
+            className="btn btn-danger m-2"
+          >
+            Supprimer
+          </button>
+        </div>
+      </td>
+    </tr>
+  ))}
+</tbody>
       </table>
     </div>
   );

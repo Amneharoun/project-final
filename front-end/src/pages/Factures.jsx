@@ -87,17 +87,23 @@ const Factures = () => {
           </tr>
         </thead>
         <tbody>
-          ${facture.items.map(i => `
+          ${facture.items
+            .map(
+              (i) => `
             <tr>
               <td>${i.description}</td>
               <td>${i.quantite}</td>
               <td>${i.prix.toFixed(2)}</td>
               <td>${(i.quantite * i.prix).toFixed(2)}</td>
             </tr>
-          `).join('')}
+          `
+            )
+            .join("")}
           <tr>
             <td colspan="3" style="text-align:right"><strong>Total</strong></td>
-            <td><strong>${facture.items.reduce((acc,i) => acc+i.quantite*i.prix,0).toFixed(2)}</strong></td>
+            <td><strong>${facture.items
+              .reduce((acc, i) => acc + i.quantite * i.prix, 0)
+              .toFixed(2)}</strong></td>
           </tr>
         </tbody>
       </table>
@@ -110,7 +116,10 @@ const Factures = () => {
 
   // ➕ Articles
   const addItem = () =>
-    setForm({ ...form, items: [...form.items, { description: "", quantite: 1, prix: 0 }] });
+    setForm({
+      ...form,
+      items: [...form.items, { description: "", quantite: 1, prix: 0 }],
+    });
 
   const removeItem = (index) => {
     setForm({ ...form, items: form.items.filter((_, i) => i !== index) });
@@ -149,14 +158,39 @@ const Factures = () => {
               <td>{f.client}</td>
               <td>{new Date(f.date).toLocaleDateString()}</td>
               <td>
-                <span className={`badge ${f.statut==="Payée"?"bg-success":f.statut==="En attente"?"bg-warning text-dark":"bg-danger"}`}>
+                <span
+                  className={`badge ${
+                    f.statut === "Payée"
+                      ? "bg-success"
+                      : f.statut === "En attente"
+                      ? "bg-warning text-dark"
+                      : "bg-danger"
+                  }`}
+                >
                   {f.statut}
                 </span>
               </td>
-              <td>
-                <button className="btn btn-warning btn-sm me-2" onClick={()=>handleEdit(f)}>Modifier</button>
-                <button className="btn btn-sm btn-danger me-1" onClick={()=>handleDelete(f._id)}>Supprimer</button>
-                <button className="btn btn-sm btn-secondary" onClick={()=>handlePrint(f)}>Imprimer</button>
+              <td className="text-center">
+                <div className="btn-group btn-group-sm" role="group">
+                  <button
+                    className="btn btn-warning m-2"
+                    onClick={() => handleEdit(f)}
+                  >
+                    Modifier
+                  </button>
+                  <button
+                    className="btn btn-danger m-2"
+                    onClick={() => handleDelete(f._id)}
+                  >
+                    Supprimer
+                  </button>
+                  <button
+                    className="btn btn-secondary m-2"
+                    onClick={() => handlePrint(f)}
+                  >
+                    Imprimer
+                  </button>
+                </div>
               </td>
             </tr>
           ))}
@@ -165,26 +199,57 @@ const Factures = () => {
 
       {/* Modal ajout/modification */}
       {showModal && (
-        <div className="modal show d-block" style={{backgroundColor:"rgba(0,0,0,0.5)"}}>
+        <div
+          className="modal show d-block"
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        >
           <div className="modal-dialog modal-lg">
             <div className="modal-content">
               <form onSubmit={handleSave}>
                 <div className="modal-header">
-                  <h5 className="modal-title">{currentFacture ? "Modifier" : "Nouvelle"} Facture</h5>
-                  <button type="button" className="btn-close" onClick={()=>setShowModal(false)}></button>
+                  <h5 className="modal-title">
+                    {currentFacture ? "Modifier" : "Nouvelle"} Facture
+                  </h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setShowModal(false)}
+                  ></button>
                 </div>
                 <div className="modal-body">
                   <div className="mb-3">
                     <label className="form-label">Client</label>
-                    <input type="text" className="form-control" value={form.client} onChange={(e)=>setForm({...form, client:e.target.value})} required/>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={form.client}
+                      onChange={(e) =>
+                        setForm({ ...form, client: e.target.value })
+                      }
+                      required
+                    />
                   </div>
                   <div className="mb-3">
                     <label className="form-label">Date</label>
-                    <input type="date" className="form-control" value={form.date} onChange={(e)=>setForm({...form, date:e.target.value})} required/>
+                    <input
+                      type="date"
+                      className="form-control"
+                      value={form.date}
+                      onChange={(e) =>
+                        setForm({ ...form, date: e.target.value })
+                      }
+                      required
+                    />
                   </div>
                   <div className="mb-3">
                     <label className="form-label">Statut</label>
-                    <select className="form-select" value={form.statut} onChange={(e)=>setForm({...form, statut:e.target.value})}>
+                    <select
+                      className="form-select"
+                      value={form.statut}
+                      onChange={(e) =>
+                        setForm({ ...form, statut: e.target.value })
+                      }
+                    >
                       <option value="En attente">En attente</option>
                       <option value="Payée">Payée</option>
                       <option value="Annulée">Annulée</option>
@@ -192,31 +257,85 @@ const Factures = () => {
                   </div>
                   <div className="mb-3">
                     <label className="form-label">Articles</label>
-                    {form.items.map((item,index)=>(
+                    {form.items.map((item, index) => (
                       <div key={index} className="row mb-2 align-items-end">
                         <div className="col-md-4">
-                          <input type="text" className="form-control" placeholder="Description" value={item.description} onChange={(e)=>updateItem(index,"description",e.target.value)} required/>
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Description"
+                            value={item.description}
+                            onChange={(e) =>
+                              updateItem(index, "description", e.target.value)
+                            }
+                            required
+                          />
                         </div>
                         <div className="col-md-2">
-                          <input type="number" className="form-control" placeholder="Qté" min="1" value={item.quantite} onChange={(e)=>updateItem(index,"quantite",e.target.value)} required/>
+                          <input
+                            type="number"
+                            className="form-control"
+                            placeholder="Qté"
+                            min="1"
+                            value={item.quantite}
+                            onChange={(e) =>
+                              updateItem(index, "quantite", e.target.value)
+                            }
+                            required
+                          />
                         </div>
                         <div className="col-md-3">
-                          <input type="number" className="form-control" placeholder="Prix" min="0" step="0.01" value={item.prix} onChange={(e)=>updateItem(index,"prix",e.target.value)} required/>
+                          <input
+                            type="number"
+                            className="form-control"
+                            placeholder="Prix"
+                            min="0"
+                            step="0.01"
+                            value={item.prix}
+                            onChange={(e) =>
+                              updateItem(index, "prix", e.target.value)
+                            }
+                            required
+                          />
                         </div>
                         <div className="col-md-2">
-                          <strong>{(item.quantite*item.prix).toFixed(2)}</strong>
+                          <strong>
+                            {(item.quantite * item.prix).toFixed(2)}
+                          </strong>
                         </div>
                         <div className="col-md-1">
-                          {form.items.length>1 && <button type="button" className="btn btn-outline-danger btn-sm" onClick={()=>removeItem(index)}>X</button>}
+                          {form.items.length > 1 && (
+                            <button
+                              type="button"
+                              className="btn btn-outline-danger btn-sm"
+                              onClick={() => removeItem(index)}
+                            >
+                              X
+                            </button>
+                          )}
                         </div>
                       </div>
                     ))}
-                    <button type="button" className="btn btn-outline-primary btn-sm" onClick={addItem}>+ Ajouter article</button>
+                    <button
+                      type="button"
+                      className="btn btn-outline-primary btn-sm"
+                      onClick={addItem}
+                    >
+                      + Ajouter article
+                    </button>
                   </div>
                 </div>
                 <div className="modal-footer">
-                  <button type="button" className="btn btn-secondary" onClick={()=>setShowModal(false)}>Annuler</button>
-                  <button type="submit" className="btn btn-primary">{currentFacture?"Modifier":"Ajouter"}</button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => setShowModal(false)}
+                  >
+                    Annuler
+                  </button>
+                  <button type="submit" className="btn btn-primary">
+                    {currentFacture ? "Modifier" : "Ajouter"}
+                  </button>
                 </div>
               </form>
             </div>

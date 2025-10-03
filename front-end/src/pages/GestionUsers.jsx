@@ -10,7 +10,7 @@ export default function GestionUsers() {
     name: "",
     email: "",
     role: "caissier",
-    password: ""
+    password: "",
   });
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export default function GestionUsers() {
   const fetchUtilisateurs = async () => {
     try {
       const response = await axios.get("http://localhost:5000/gestion-users", {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       setUtilisateurs(response.data);
     } catch (error) {
@@ -32,12 +32,18 @@ export default function GestionUsers() {
     e.preventDefault();
     try {
       if (editMode) {
-        await axios.put(`http://localhost:5000/gestion-users/${currentUser._id}`, formData, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-        });
+        await axios.put(
+          `http://localhost:5000/gestion-users/${currentUser._id}`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
       } else {
         await axios.post("http://localhost:5000/gestion-users/", formData, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
       }
       fetchUtilisateurs();
@@ -54,17 +60,19 @@ export default function GestionUsers() {
       name: user.name,
       email: user.email,
       role: user.role,
-      password: ""
+      password: "",
     });
     setEditMode(true);
     setShowModal(true);
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur ?")) {
+    if (
+      window.confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur ?")
+    ) {
       try {
         await axios.delete(`http://localhost:5000/gestion-users/${id}`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         fetchUtilisateurs();
       } catch (error) {
@@ -79,7 +87,7 @@ export default function GestionUsers() {
       name: "",
       email: "",
       role: "caissier",
-      password: ""
+      password: "",
     });
     setCurrentUser(null);
     setEditMode(false);
@@ -88,9 +96,9 @@ export default function GestionUsers() {
 
   const getRoleBadge = (role) => {
     const badges = {
-      "admin": "bg-danger",
-      "pharmacien": "bg-primary",
-      "caissier": "bg-success"
+      admin: "bg-danger",
+      pharmacien: "bg-primary",
+      caissier: "bg-success",
     };
     return badges[role] || "bg-secondary";
   };
@@ -99,10 +107,7 @@ export default function GestionUsers() {
     <div className="container-fluid p-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2>Gestion des Utilisateurs</h2>
-        <button 
-          className="btn btn-primary"
-          onClick={() => setShowModal(true)}
-        >
+        <button className="btn btn-success" onClick={() => setShowModal(true)}>
           + Nouvel Utilisateur
         </button>
       </div>
@@ -138,20 +143,26 @@ export default function GestionUsers() {
                         {user.role}
                       </span>
                     </td>
-                    <td>{new Date(user.createdAt || Date.now()).toLocaleDateString()}</td>
                     <td>
-                      <button
-                        className="btn btn-sm btn-outline-primary me-1"
-                        onClick={() => handleEdit(user)}
-                      >
-                        Modifier
-                      </button>
-                      <button
-                        className="btn btn-sm btn-outline-danger"
-                        onClick={() => handleDelete(user._id)}
-                      >
-                        Supprimer
-                      </button>
+                      {new Date(
+                        user.createdAt || Date.now()
+                      ).toLocaleDateString()}
+                    </td>
+                    <td className="text-center">
+                      <div className="btn-group btn-group-sm" role="group">
+                        <button
+                          className="btn btn-warning m-2"
+                          onClick={() => handleEdit(user)}
+                        >
+                          Modifier
+                        </button>
+                        <button
+                          className="btn btn-sm btn-danger m-2"
+                          onClick={() => handleDelete(user._id)}
+                        >
+                          Supprimer
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -163,14 +174,21 @@ export default function GestionUsers() {
 
       {/* Modal */}
       {showModal && (
-        <div className="modal show d-block" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+        <div
+          className="modal show d-block"
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        >
           <div className="modal-dialog">
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title">
                   {editMode ? "Modifier l'utilisateur" : "Nouvel Utilisateur"}
                 </h5>
-                <button type="button" className="btn-close" onClick={resetForm}></button>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={resetForm}
+                ></button>
               </div>
               <form onSubmit={handleSubmit}>
                 <div className="modal-body">
@@ -180,7 +198,9 @@ export default function GestionUsers() {
                       type="text"
                       className="form-control"
                       value={formData.name}
-                      onChange={(e) => setFormData({...formData, name: e.target.value})}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
                       required
                     />
                   </div>
@@ -190,7 +210,9 @@ export default function GestionUsers() {
                       type="email"
                       className="form-control"
                       value={formData.email}
-                      onChange={(e) => setFormData({...formData, email: e.target.value})}
+                      onChange={(e) =>
+                        setFormData({ ...formData, email: e.target.value })
+                      }
                       required
                     />
                   </div>
@@ -199,7 +221,9 @@ export default function GestionUsers() {
                     <select
                       className="form-select"
                       value={formData.role}
-                      onChange={(e) => setFormData({...formData, role: e.target.value})}
+                      onChange={(e) =>
+                        setFormData({ ...formData, role: e.target.value })
+                      }
                       required
                     >
                       <option value="caissier">Caissier</option>
@@ -209,20 +233,28 @@ export default function GestionUsers() {
                   </div>
                   <div className="mb-3">
                     <label className="form-label">
-                      {editMode ? "Nouveau mot de passe (laisser vide)" : "Mot de passe *"}
+                      {editMode
+                        ? "Nouveau mot de passe (laisser vide)"
+                        : "Mot de passe *"}
                     </label>
                     <input
                       type="password"
                       className="form-control"
                       value={formData.password}
-                      onChange={(e) => setFormData({...formData, password: e.target.value})}
+                      onChange={(e) =>
+                        setFormData({ ...formData, password: e.target.value })
+                      }
                       required={!editMode}
                       minLength="6"
                     />
                   </div>
                 </div>
                 <div className="modal-footer">
-                  <button type="button" className="btn btn-secondary" onClick={resetForm}>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={resetForm}
+                  >
                     Annuler
                   </button>
                   <button type="submit" className="btn btn-primary">
