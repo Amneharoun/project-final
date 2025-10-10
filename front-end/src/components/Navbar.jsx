@@ -4,73 +4,60 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 const Navbar = () => {
   const [user, setUser] = useState(null);
   const [role, setRole] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [medicaments, setMedicaments] = useState([]);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // const [searchTerm, setSearchTerm] = useState("");
+  // const [medicaments, setMedicaments] = useState([]);
+
   const location = useLocation();
   const navigate = useNavigate();
 
-  // ✅ Vérifie connexion + récupère médicaments
+  // ✅ Load user info + meds
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userRole = localStorage.getItem("role");
     const userName = localStorage.getItem("userName");
 
+    setIsAuthenticated(!!token);
     if (token) {
       setUser(userName || "Utilisateur");
       setRole(userRole || "");
     }
-
-    fetch("http://localhost:5000/medicaments")
-      .then((res) => res.json())
-      .then((data) => setMedicaments(data))
-      .catch((err) => console.error("Erreur médicaments :", err));
   }, []);
 
-  // ✅ Déconnexion
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
-    localStorage.removeItem("userName");
+    localStorage.clear();
     setUser(null);
     setRole("");
+    setIsAuthenticated(false);
     navigate("/");
   };
 
-  // ✅ Connexion
   const handleLoginClick = () => {
     navigate("/login");
   };
 
-  // ✅ Activer lien courant
-  const isActive = (path) => {
-    return location.pathname === path ? "nav-link active" : "nav-link";
-  };
-
-  // ✅ Recherche médicaments
-  const handleSearch = (e) => {
-    e.preventDefault();
-    const found = medicaments.find(
-      (med) => med.nom.toLowerCase() === searchTerm.toLowerCase()
-    );
-    if (found) {
-      alert(`Médicament trouvé : ${found.nom}`);
-      navigate("/medicament");
-    } else {
-      alert("Médicament introuvable !");
-    }
-    setSearchTerm("");
-  };
+  const isActive = (path) =>
+    location.pathname === path ? "nav-link active" : "nav-link";
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
       <div className="container-fluid">
-        {/* Logo */}
-        <Link className="navbar-brand fw-bold" to="/dashboard">
-          <i className="fas fa-mortar-pestle me-2"></i>
+        {/* 🧴 Logo */}
+        <Link className="navbar-brand fw-bold d-flex align-items-center" to="/">
+          <img
+            src="/src/assets/aboukoumba.png"
+            alt="Pharmacie Logo"
+            style={{
+              width: "40px",
+              height: "40px",
+              marginRight: "10px",
+              borderRadius: "5px",
+            }}
+          />
           Pharmacie-Aboukoumba
         </Link>
 
-        {/* Toggle mobile */}
+        {/* 📱 Toggle */}
         <button
           className="navbar-toggler"
           type="button"
@@ -80,13 +67,26 @@ const Navbar = () => {
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        {/* Menu */}
+        {/* 🌐 Menu */}
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav me-auto">
+            {isAuthenticated && (
+              <li className="nav-item">
+                <Link className={isActive("/dashboard")} to="/dashboard">
+                  <i className="fas fa-chart-line me-1"></i> Tableau de bord
+                </Link>
+              </li>
+            )}
+
             <li className="nav-item">
-              <Link className={isActive("/dashboard")} to="/dashboard">
-                <i className="fas fa-chart-line me-1"></i>
-                Tableau de bord
+              <Link className="nav-link" to="/contact">
+                Contact
+              </Link>
+            </li>
+
+            <li className="nav-item">
+              <Link className="nav-link" to="/services">
+                Services
               </Link>
             </li>
 
@@ -98,20 +98,18 @@ const Navbar = () => {
                   role="button"
                   data-bs-toggle="dropdown"
                 >
-                  <i className="fas fa-cog me-1"></i>
-                  Administration
+                  <i className="fas fa-cog me-1"></i> Administration
                 </a>
                 <ul className="dropdown-menu">
                   <li>
                     <Link className="dropdown-item" to="/utilisateurs">
-                      <i className="fas fa-user-cog me-2"></i>
-                      Utilisateurs
+                      <i className="fas fa-user-cog me-2"></i> Utilisateurs
                     </Link>
                   </li>
                   <li>
                     <Link className="dropdown-item" to="/medicament">
-                      <i className="fas fa-file-import me-2"></i>
-                      Import/Export
+                      <i className="fas fa-file-import me-2"></i> Import /
+                      Export
                     </Link>
                   </li>
                 </ul>
@@ -119,24 +117,9 @@ const Navbar = () => {
             )}
           </ul>
 
-          {/* 🔎 Recherche */}
-          <form className="d-flex me-3" onSubmit={handleSearch}>
-            <input
-              type="search"
-              className="form-control me-2"
-              placeholder="Rechercher un médicament"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <button className="btn btn-light" type="submit">
-              <i className="fas fa-search"></i>
-            </button>
-          </form>
-
-          {/* 👤 Utilisateur */}
+          {/* 👤 User */}
           <ul className="navbar-nav">
-            {user ? (
-              // ✅ Cas connecté → Profil + Déconnexion
+            {isAuthenticated ? (
               <li className="nav-item dropdown">
                 <a
                   className="nav-link dropdown-toggle"
@@ -144,32 +127,28 @@ const Navbar = () => {
                   role="button"
                   data-bs-toggle="dropdown"
                 >
-                  <i className="fas fa-user-circle me-1"></i>
-                  {user} ({role})
+                  <i className="fas fa-user-circle me-1"></i> {user} ({role})
                 </a>
                 <ul className="dropdown-menu dropdown-menu-end">
                   <li>
                     <Link className="dropdown-item" to="/profile">
-                      <i className="fas fa-user me-2"></i>
-                      Mon profil
+                      <i className="fas fa-user me-2"></i> Mon profil
                     </Link>
                   </li>
-                  <li><hr className="dropdown-divider" /></li>
                   <li>
-                    <a
+                    <hr className="dropdown-divider" />
+                  </li>
+                  <li>
+                    <button
                       className="dropdown-item text-danger"
-                      href="#"
                       onClick={handleLogout}
                     >
-                      <i className="fas fa-sign-out-alt me-2"></i>
-                      
-                       Déconnexion
-                    </a>
+                      <i className="fas fa-sign-out-alt me-2"></i> Déconnexion
+                    </button>
                   </li>
                 </ul>
               </li>
             ) : (
-              // ✅ Cas non connecté → Connexion
               <li className="nav-item">
                 <a
                   className="nav-link"
@@ -177,9 +156,9 @@ const Navbar = () => {
                   onClick={(e) => {
                     e.preventDefault();
                     handleLoginClick();
-                  }} >
-                  <i className="fas fa-sign-in-alt me-1"></i> 
-                 Connexion
+                  }}
+                >
+                  <i className="fas fa-sign-in-alt me-1"></i> Connexion
                 </a>
               </li>
             )}
