@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import Register from "./Register";
+import { AuthContext } from "../context/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext); // ✅ Use context login function
   const [form, setForm] = useState({ email: "", password: "" });
   const [message, setMessage] = useState("");
   const [forgotEmail, setForgotEmail] = useState("");
@@ -30,13 +31,14 @@ const Login = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
+
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
+        // ✅ Use context to store and decode token
+        login(data.token);
         setMessage("Connexion réussie !");
-        setTimeout(() => navigate("/dashboard"), 1000);
+        navigate("/dashboard");
       } else {
         setMessage(data.message || "Erreur lors de la connexion");
       }
@@ -57,13 +59,13 @@ const Login = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: forgotEmail }),
       });
+
       const data = await response.json();
-      // console.log(data.otpToken);
       localStorage.setItem("otpToken", data.otpToken);
 
       setMessage(data.message || "Si l'email existe, un lien a été envoyé.");
       setShowForgotModal(false);
-      setTimeout(() => navigate("/reset-password"),);
+      setTimeout(() => navigate("/reset-password"), 1500);
     } catch (err) {
       console.error(err);
       setMessage("Erreur serveur. Veuillez réessayer.");
@@ -77,7 +79,7 @@ const Login = () => {
           <div className="card shadow">
             <div className="card-body">
               <h3 className="card-title mb-4 text-center">Connexion</h3>
-              {message && <div className="alert alert-danger">{message}</div>}
+              {message && <div className="alert alert-info">{message}</div>}
               <form onSubmit={handleLogin}>
                 <div className="mb-3">
                   <label className="form-label">Email</label>
@@ -115,27 +117,29 @@ const Login = () => {
                     Mot de passe oublié ?
                   </button>
                 </div>
-                {/* Si utilisateur n'a pas de compte */}
-                <div className="text-center mt-3">
+
+                <div className="d-flex justify-content-between align-items-center mb-5">
                   <p>Vous n'avez pas de compte ?</p>
                   <button
                     type="button"
-                    className="btn btn-outline-primary"
+                    className="btn btn-primary mb-5"
                     onClick={() => navigate("/register")}
                   >
                     Inscrivez-vous
                   </button>
                 </div>
               </form>
-
             </div>
           </div>
         </div>
       </div>
 
-      {/* Modal Mot de passe oublié */}
+      {/* Forgot password modal */}
       {showForgotModal && (
-        <div className="modal show d-block" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+        <div
+          className="modal show d-block"
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        >
           <div className="modal-dialog">
             <div className="modal-content">
               <div className="modal-header">
@@ -160,7 +164,10 @@ const Login = () => {
                 </div>
               </div>
               <div className="modal-footer">
-                <button className="btn btn-secondary" onClick={() => setShowForgotModal(false)}>
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => setShowForgotModal(false)}
+                >
                   Annuler
                 </button>
                 <button className="btn btn-primary" onClick={handleForgotPassword}>

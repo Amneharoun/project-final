@@ -1,39 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
 const Navbar = () => {
-  const [user, setUser] = useState(null);
-  const [role, setRole] = useState("");
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  // const [searchTerm, setSearchTerm] = useState("");
-  // const [medicaments, setMedicaments] = useState([]);
-
+  const { user, role, isAuthenticated, logout } = useContext(AuthContext);
   const location = useLocation();
   const navigate = useNavigate();
 
-  // ✅ Load user info + meds
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const userRole = localStorage.getItem("role");
-    const userName = localStorage.getItem("userName");
-
-    setIsAuthenticated(!!token);
-    if (token) {
-      setUser(userName || "Utilisateur");
-      setRole(userRole || "");
-    }
-  }, []);
-
+  const handleLoginClick = () => navigate("/login");
   const handleLogout = () => {
-    localStorage.clear();
-    setUser(null);
-    setRole("");
-    setIsAuthenticated(false);
+    logout();
     navigate("/");
-  };
-
-  const handleLoginClick = () => {
-    navigate("/login");
   };
 
   const isActive = (path) =>
@@ -42,7 +19,6 @@ const Navbar = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
       <div className="container-fluid">
-        {/* 🧴 Logo */}
         <Link className="navbar-brand fw-bold d-flex align-items-center" to="/">
           <img
             src="/src/assets/aboukoumba.png"
@@ -57,7 +33,6 @@ const Navbar = () => {
           Pharmacie-Aboukoumba
         </Link>
 
-        {/* 📱 Toggle */}
         <button
           className="navbar-toggler"
           type="button"
@@ -67,7 +42,6 @@ const Navbar = () => {
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        {/* 🌐 Menu */}
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav me-auto">
             {isAuthenticated && (
@@ -108,8 +82,7 @@ const Navbar = () => {
                   </li>
                   <li>
                     <Link className="dropdown-item" to="/medicament">
-                      <i className="fas fa-file-import me-2"></i> Import /
-                      Export
+                      <i className="fas fa-file-import me-2"></i> Import / Export
                     </Link>
                   </li>
                 </ul>
@@ -117,7 +90,6 @@ const Navbar = () => {
             )}
           </ul>
 
-          {/* 👤 User */}
           <ul className="navbar-nav">
             {isAuthenticated ? (
               <li className="nav-item dropdown">

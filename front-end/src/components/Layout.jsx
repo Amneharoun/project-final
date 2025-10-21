@@ -1,25 +1,21 @@
-import React from "react";
+import React, { useContext } from "react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
+import { AuthContext } from "../context/AuthContext";
 
-export default function Layout({ children, role }) {
+export default function Layout({ children }) {
+  const { role, isAuthenticated } = useContext(AuthContext);
+
   return (
     <div className="d-flex flex-column" style={{ minHeight: "100vh" }}>
-      {/* Top Navbar */}
       <Navbar />
 
-      {/* Sidebar + Main content */}
       <div className="d-flex flex-grow-1">
-        {/* Show sidebar only if user is logged in */}
-        {role && <Sidebar role={role} />}
-
-        <div className="flex-grow-1 p-4">
-          {children}
-        </div>
+        {isAuthenticated && <Sidebar role={role} />}
+        <div className="flex-grow-1 p-4">{children}</div>
       </div>
 
-      {/* Footer at bottom */}
       <Footer />
     </div>
   );
