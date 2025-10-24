@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./context/AuthProvider"; // ✅
+import { AuthProvider } from "./context/AuthProvider"; 
 import Layout from "./components/Layout";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
@@ -19,6 +19,8 @@ import Profile from "./pages/Profile";
 import ExcelPage from "./pages/Excelpage";
 import NouvelleVente from "./pages/NouvelleVente";
 import ListeVentes from "./pages/ListeVente";
+import Services from "./pages/Services";
+import Contact from "./pages/Contact";
 
 const App = () => {
   return (
@@ -43,6 +45,9 @@ const App = () => {
             <Route path="/profile" element={<Profile />} />
             <Route path="/nouvellevente" element={<NouvelleVente />} />
             <Route path="/listevente" element={<ListeVentes />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/contact" element={<Contact />} />
+
           </Routes>
         </Layout>
       </BrowserRouter>
