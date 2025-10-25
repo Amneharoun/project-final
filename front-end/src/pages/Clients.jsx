@@ -5,19 +5,25 @@ export default function Clients() {
   const [clients, setClients] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editingClient, setEditingClient] = useState(null);
-  const [formData, setFormData] = useState({
-    nom: "",
-    contact: ""
-  });
+  const [formData, setFormData] = useState({ nom: "", contact: "" });
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [limit, setLimit] = useState(5);
 
   useEffect(() => {
-    fetchClients();
-  }, []);
+    fetchClients(page, limit);
+  }, [page, limit]);
 
-  const fetchClients = async () => {
+  const fetchClients = async (page, limit) => {
     try {
-      const response = await axios.get("http://localhost:5000/clients/");
-      setClients(response.data);
+      const response = await axios.get(
+        `http://localhost:5000/clients/${page}/${limit}`
+      );
+      console.log("🧾 Réponse backend :", response.data);
+
+      const data = response.data;
+      setClients(data.docs);
+      setTotalPages(data.totalPages);
     } catch (error) {
       console.error("Erreur lors du chargement des clients:", error);
     }
@@ -27,11 +33,14 @@ export default function Clients() {
     e.preventDefault();
     try {
       if (editingClient) {
-        await axios.put(`http://localhost:5000/clients/${editingClient._id}`, formData);
+        await axios.put(
+          `http://localhost:5000/clients/${editingClient._id}`,
+          formData
+        );
       } else {
         await axios.post("http://localhost:5000/clients", formData);
       }
-      fetchClients();
+      fetchClients(page, limit); // ✅ toujours passer page et limit
       resetForm();
     } catch (error) {
       console.error("Erreur lors de la sauvegarde:", error);
@@ -42,7 +51,7 @@ export default function Clients() {
     if (window.confirm("Êtes-vous sûr de vouloir supprimer ce client ?")) {
       try {
         await axios.delete(`http://localhost:5000/clients/${id}`);
-        fetchClients();
+        fetchClients(page, limit);
       } catch (error) {
         console.error("Erreur lors de la suppression:", error);
       }
@@ -61,17 +70,21 @@ export default function Clients() {
     setShowModal(true);
   };
 
+  const previousPage = () => {
+    if (page > 1) setPage(page - 1);
+  };
+
+  const nextPage = () => {
+    if (page < totalPages) setPage(page + 1);
+  };
+
   return (
-        <div className="container-fluid p-4">
+    <div className="container p-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2>Gestion des Clients</h2>
-        <button 
-          className="btn btn-success"
-          onClick={() => setShowModal(true)}
-        >
+        <button className="btn btn-success" onClick={() => setShowModal(true)}>
           + Nouveau Client
         </button>
-        
       </div>
 
       {/* Table des clients */}
@@ -97,45 +110,75 @@ export default function Clients() {
                         {client.historiqueAchats?.length || 0}
                       </span>
                     </td>
-                  <td className="text-center">
-        <div className="btn-group btn-group-sm" role="group">
-
-                      <button
-                        className="btn btn-warning m-2"
-                        onClick={() => openEditModal(client)}
-                      >
-                        Modifier
-                      </button>
-                      <button
-                        className="btn btn-danger m-2"
-                        onClick={() => handleDelete(client._id)}
-                      >
-                        Supprimer
-                      </button>
+                    <td className="text-center">
+                      <div className="btn-group btn-group-sm" role="group">
+                        <button
+                          className="btn btn-warning m-2"
+                          onClick={() => openEditModal(client)}
+                        >
+                          Modifier
+                        </button>
+                        <button
+                          className="btn btn-danger m-2"
+                          onClick={() => handleDelete(client._id)}
+                        >
+                          Supprimer
+                        </button>
                       </div>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+
+            {/* Pagination et limite */}
+            <div className="container text-center">
+              <div className="row">
+                <div className="col text-end">
+                  <input
+                    type="number"
+                    placeholder="Limite"
+                    value={limit}
+                    onChange={(e) => setLimit(Number(e.target.value))}
+                    className="form-control"
+                  />
+                </div>
+                <div className="col text-start">
+                  <button
+                    className="btn btn-outline-primary"
+                    disabled={page <= 1}
+                    onClick={previousPage}
+                  >
+                    <i className="bi bi-caret-left-fill"></i>
+                  </button>
+                  &nbsp;{page}&nbsp;
+                  <button
+                    className="btn btn-outline-primary"
+                    disabled={page >= totalPages}
+                    onClick={nextPage}
+                  >
+                    <i className="bi bi-caret-right-fill"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Modal pour ajouter/modifier */}
       {showModal && (
-        <div className="modal show d-block" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+        <div
+          className="modal show d-block"
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        >
           <div className="modal-dialog">
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title">
                   {editingClient ? "Modifier Client" : "Nouveau Client"}
                 </h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={resetForm}
-                ></button>
+                <button type="button" className="btn-close" onClick={resetForm}></button>
               </div>
               <form onSubmit={handleSubmit}>
                 <div className="modal-body">
@@ -145,7 +188,9 @@ export default function Clients() {
                       type="text"
                       className="form-control"
                       value={formData.nom}
-                      onChange={(e) => setFormData({...formData, nom: e.target.value})}
+                      onChange={(e) =>
+                        setFormData({ ...formData, nom: e.target.value })
+                      }
                       required
                     />
                   </div>
@@ -155,7 +200,9 @@ export default function Clients() {
                       type="text"
                       className="form-control"
                       value={formData.contact}
-                      onChange={(e) => setFormData({...formData, contact: e.target.value})}
+                      onChange={(e) =>
+                        setFormData({ ...formData, contact: e.target.value })
+                      }
                       placeholder="Téléphone ou email"
                     />
                   </div>

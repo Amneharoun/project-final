@@ -12,62 +12,104 @@ const NouvelleVente = () => {
 
   const [message, setMessage] = useState("");
 
-  //pour charger les clients et medicaments disponibles
+  // 🔹 Charger les clients et médicaments
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/clients")
-      .then((res) => setClients(res.data));
-    axios
-      .get("http://localhost:5000/medicaments")
-      .then((res) => setMedicaments(res.data));
+    const fetchData = async () => {
+      try {
+        const resClients = await axios.get(
+          "http://localhost:5000/clients/1/1000"
+        );
+        const resMeds = await axios.get(
+          "http://localhost:5000/medicaments/1/1000"
+        );
+        setClients(resClients.data.docs || []);
+        setMedicaments(resMeds.data.docs || []);
+      } catch (error) {
+        console.error("Erreur lors du chargement :", error);
+      }
+    };
+    fetchData();
   }, []);
 
-  //pour ajouter un medicament a vente
-
+  // 🔹 Ajouter un médicament à la vente
   const ajouterMedicament = () => {
     setVente({
       ...vente,
       medicaments: [
         ...vente.medicaments,
-        { medicament: "", quantite: 1, prix: 0 },
+        { medicament: "", quantite: 1, reduction: 0 },
       ],
     });
   };
 
-  //pour gerer la modification d'un medicament dans la liste
+  // 🔹 Gérer les changements
   const handleMedicamentChange = (index, field, value) => {
     const updated = [...vente.medicaments];
-    updated[index][field] = value;
+
+    // For numeric fields (quantite, reduction), convert carefully
+    if (field === "quantite" || field === "reduction") {
+      updated[index][field] = value === "" ? "" : parseInt(value);
+    } else {
+      updated[index][field] = value;
+    }
+
     setVente({ ...vente, medicaments: updated });
   };
 
-  // pour soumettre la vente au backend
+  // 🔹 Soumettre la vente
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/ventes/ventes", vente);
-      setMessage("vente enregistree avec succes");
-      console.log(res.data);
+      console.log(vente);
+
+      const res = await axios.post(
+        "http://localhost:5000/ventes/ventes",
+        vente
+      );
+      setMessage("✅ Vente enregistrée avec succès !");
+      console.log("Nouvelle Vente : ", res.data);
+
+      // ==== Plus besoin de créer une facture, car directement gérer par le backend à l'ajout d'une vente
+      // // Transformer les médicaments en items de facture
+      // const items = res.data.medicaments.map((m) => ({
+      //   description: m.medicament.nom,
+      //   quantite: m.quantite,
+      //   prix: m.prix,
+      // }));
+
+      // // Créer la facture
+      // const resFacture = await axios.post("http://localhost:5000/factures", {
+      //   client: res.data.client.nom,
+      //   date: res.data.dateVente,
+      //   items,
+      // });
+      // console.log("Nouvelle Facture : ", resFacture.data);
+      // ====
+
+      setVente({ client: "", medicaments: [], reduction: 0 }); // reset
     } catch (error) {
-      setMessage("erreur:" + error.response?.message || error.message);
+      setMessage(
+        " Erreur: " + (error.response?.data?.message || error.message)
+      );
     }
   };
 
   return (
-    <div className="contrainer mt-4">
-      <h2>Nouvelle vente</h2>
-      {message && <div className="alert alert-info"> {message}</div>}
+    <div className="container mt-4">
+      <h2>Nouvelle Vente</h2>
+      {message && <div className="alert alert-info">{message}</div>}
 
       <form onSubmit={handleSubmit}>
-        {/* choix client */}
+        {/* 🔸 Choix du client */}
         <div className="mb-3">
-          <label>Client</label>
+          <label className="form-label">Client</label>
           <select
             className="form-select"
             value={vente.client}
             onChange={(e) => setVente({ ...vente, client: e.target.value })}
+            required
           >
-            <option value="">--selectionner--</option>
+            <option value="">-- Sélectionner --</option>
             {clients.map((c) => (
               <option key={c._id} value={c._id}>
                 {c.nom}
@@ -76,18 +118,19 @@ const NouvelleVente = () => {
           </select>
         </div>
 
-        {/* liste des medicaments */}
+        {/* 🔸 Liste des médicaments */}
         {vente.medicaments.map((item, index) => (
-          <div key={index} className="row mb-2">
-            <div className="col-mb-4">
+          <div key={index} className="row mb-2 align-items-center">
+            <div className="col-md-4">
               <select
                 className="form-select"
                 value={item.medicament}
                 onChange={(e) =>
                   handleMedicamentChange(index, "medicament", e.target.value)
                 }
+                required
               >
-                <option value="">--Medicament--</option>
+                <option value="">-- Médicament --</option>
                 {medicaments.map((m) => (
                   <option key={m._id} value={m._id}>
                     {m.nom} (stock: {m.stock})
@@ -95,61 +138,81 @@ const NouvelleVente = () => {
                 ))}
               </select>
             </div>
+
             <div className="col-md-2">
               <input
                 type="number"
                 className="form-control"
-                placeholder="Quantite"
-                value={isNaN(item.quantite) ? "" : item.quantite}
+                placeholder="Quantité"
+                min="1"
+                value={item.quantite || ""}
                 onChange={(e) =>
                   handleMedicamentChange(
                     index,
                     "quantite",
-                    e.target.value === "" ? "" : parseInt(e.target.value)
+                    parseInt(e.target.value) || 1
+                  )
+                }
+                required
+              />
+            </div>
+
+            {/* <div className="col-md-2">
+              <input
+                type="number"
+                className="form-control"
+                placeholder="Prix (fcfa)"
+                min="0"
+                value={item.prix || ""}
+                onChange={(e) =>
+                  handleMedicamentChange(
+                    index,
+                    "prix",
+                    parseFloat(e.target.value) || 0
+                  )
+                }
+                required
+              />
+            </div> */}
+
+            <div className="col-md-2">
+              <input
+                type="number"
+                className="form-control"
+                placeholder="Réduction (%)"
+                min="0"
+                max="100"
+                value={item.reduction === "" ? "" : item.reduction}
+                onChange={(e) =>
+                  handleMedicamentChange(
+                    index,
+                    "reduction",
+                    parseInt(e.target.value) || 0
                   )
                 }
               />
             </div>
-
-            <input
-              type="number"
-              className="form-control"
-              value={isNaN(vente.reduction) ? "" : vente.reduction}
-              onChange={(e) =>
-                setVente({
-                  ...vente,
-                  reduction:
-                    e.target.value === "" ? "" : parseFloat(e.target.value),
-                })
-              }
-            />
           </div>
         ))}
+
+        {/* 🔸 Bouton pour ajouter un médicament */}
         <button
           type="button"
           className="btn btn-secondary mb-3"
           onClick={ajouterMedicament}
         >
-          + Ajouter un medicament
+          + Ajouter un médicament
         </button>
-        {/* Reduction*/}
-        <div className="mb-3">
-          <label>Reduction</label>
-          <input
-            type="number"
-            className="from-control"
-            value={vente.reduction}
-            onChange={(e) =>
-              setVente({ ...vente, reduction: parseFloat(e.target.value) })
-            }
-          />
-        </div>
 
-        <button type="submit" className="btn btn-success">
-          Enregistrer la vente
-        </button>
+        <div>
+          {/* 🔸 Soumettre */}
+          <button type="submit" className="btn btn-success">
+            Enregistrer la vente
+          </button>
+        </div>
       </form>
     </div>
   );
 };
+
 export default NouvelleVente;
