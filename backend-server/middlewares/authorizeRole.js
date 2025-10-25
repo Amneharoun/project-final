@@ -6,7 +6,7 @@ module.exports = (...allowedRoles) => {
     }
 
     if (!allowedRoles.includes(req.user.role)) {
-      return res.status(403).json({ message: "Accès interdit : rôle non autorisé" });
+return res.status(403).json({ message: `Rôle "${req.user.role}" non autorisé` });
     }
 
     next();

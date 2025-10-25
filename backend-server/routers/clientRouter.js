@@ -11,7 +11,7 @@ const {
 
 // Routes CRUD pour clients
 router.post("/", creerClient);
-router.get("/", getClients);
+router.get("/:page/:limit", getClients);
 router.get("/:id", getClientById);
 router.put("/:id", updateClient);
 router.delete("/:id", deleteClient);
@@ -20,3 +20,29 @@ router.delete("/:id", deleteClient);
 router.post("/achat", ajouterAchat);
 
 module.exports = router;
+// const express = require("express");
+// const router = express.Router();
+// const {
+//   creerClient,
+//   getClients,
+//   getClientById,
+//   updateClient,
+//   deleteClient,
+//   ajouterAchat,
+// } = require("../controllers/clientController");
+
+// // 🟢 Route avec pagination
+
+// // Route pagination
+// router.get("/:page/:limit", getClients);
+// // 🟢 CRUD
+// router.post("/", creerClient);
+// router.get("/:id", getClientById);
+// router.put("/:id", updateClient);
+// router.delete("/:id", deleteClient);
+
+// // 🟢 Ajouter un achat
+// router.post("/achat", ajouterAchat);
+
+// module.exports = router;
+

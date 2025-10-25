@@ -13,6 +13,8 @@ exports.getFactures = async (req, res) => {
 // ➕ Créer une nouvelle facture
 exports.createFacture = async (req, res) => {
   try {
+    console.log(req.body);
+    
     const facture = new Facture(req.body);
     const savedFacture = await facture.save();
     res.status(201).json(savedFacture);
