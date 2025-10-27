@@ -21,6 +21,7 @@ import NouvelleVente from "./pages/NouvelleVente";
 import ListeVentes from "./pages/ListeVente";
 import Services from "./pages/Services";
 import Contact from "./pages/Contact";
+import Pharmacies from "./pages/Pharmacie";
 
 const App = () => {
   return (
@@ -47,6 +48,7 @@ const App = () => {
             <Route path="/listevente" element={<ListeVentes />} />
             <Route path="/services" element={<Services />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/pharmacies" element={<Pharmacies />} />
 
           </Routes>
         </Layout>
