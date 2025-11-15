@@ -5,69 +5,98 @@ const path = require("path");
 
 //  Afficher tous les médicaments (avec recherche)
 const getMedicaments = async (req, res) => {
-    try {
-        const filter = {};
-        if (req.query.nom) {
-            filter.nom = new RegExp(req.query.nom, "i"); // recherche insensible à la casse
-        }
-        const meds = await Medicament.find(filter);
-        res.json(meds);
-    } catch (err) {
-        res.status(500).json({ message: "Erreur serveur" });
-    } 
-    
+  try {
+    let { page, limit } = req.params;
+    // console.log("Page:", page);
+
+    const filter = {};
+    if (req.query.nom) {
+      filter.nom = new RegExp(req.query.nom, "i"); // recherche insensible à la casse
+    }
+
+    const meds = await Medicament.paginate(filter, {
+      page: (page && isNaN(page)) == false ? Number.parseInt(page) : 1,
+      limit: (limit && isNaN(limit)) == false ? Number.parseInt(limit) : 5,
+    });
+
+    console.log("medicament:", typeof meds);
+    // const meds = await Medicament.find(filter);
+
+    res.json(meds);
+  } catch (err) {
+    res.status(500).json({ message: "Erreur serveur" });
+  }
 };
 
 //  Ajouter un médicament
 const addMedicament = async (req, res) => {
-    const { nom, code, categorie, prix, stock, seuilAlerte, datePeremption } = req.body;
-    // const medicament = req.body
-    
-    try {
-        const newMed = await Medicament.create({ nom, code, categorie, prix, stock, seuilAlerte, datePeremption });
-        // const newMed = await Medicament.create(medicament);
-        console.log(newMed);
+  const { nom, code, categorie, prix, stock, seuilAlerte, datePeremption } =
+    req.body;
+  // const medicament = req.body
 
-        res.json(newMed);
-    } catch (err) {
-        res.status(500).json({ erreur: err });
-    }
+  try {
+    const newMed = await Medicament.create({
+      nom,
+      code,
+      categorie,
+      prix,
+      stock,
+      seuilAlerte,
+      datePeremption,
+    });
+    // const newMed = await Medicament.create(medicament);
+    console.log(newMed);
+
+    res.json(newMed);
+  } catch (err) {
+    res.status(500).json({ erreur: err });
+  }
 };
 
 //  Modifier un médicament
 const updateMedicament = async (req, res) => {
-    try {
-        const updated = await Medicament.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        res.json(updated);
-    } catch (err) {
-        res.status(500).json({ message: "Erreur serveur" });
-    }
+  console.log("Update Medicament");
+  
+  try {
+    const updated = await Medicament.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ message: "Erreur serveur" });
+  }
 };
 
 //  Supprimer un médicament
 const deleteMedicament = async (req, res) => {
-    try {
-        await Medicament.findByIdAndDelete(req.params.id);
-        res.json({ message: "Médicament supprimé " });
-    } catch (err) {
-        res.status(500).json({ message: "Erreur serveur" });
-    }
+  try {
+    await Medicament.findByIdAndDelete(req.params.id);
+    res.json({ message: "Médicament supprimé " });
+  } catch (err) {
+    res.status(500).json({ message: "Erreur serveur" });
+  }
 };
 
 //  Voir les médicaments en rupture ou proches de la péremption
 const getAlerts = async (req, res) => {
-    try {
-        const today = new Date();
-        const alertMeds = await Medicament.find({
-            $or: [
-                { stock: { $lte: 5 } },
-                { datePeremption: { $lte: new Date(today.setDate(today.getDate() + 30)) } }
-            ]
-        });
-        res.json(alertMeds);
-    } catch (err) {
-        res.status(500).json({ message: "Erreur serveur" });
-    }
+  try {
+    const today = new Date();
+    const alertMeds = await Medicament.find({
+      $or: [
+        { stock: { $lte: 5 } },
+        {
+          datePeremption: {
+            $lte: new Date(today.setDate(today.getDate() + 30)),
+          },
+        },
+      ],
+    });
+    res.json(alertMeds);
+  } catch (err) {
+    res.status(500).json({ message: "Erreur serveur" });
+  }
 };
 
 // Médicaments en alerte
@@ -80,8 +109,8 @@ const alertesMedicaments = async (req, res) => {
     const medicaments = await Medicament.find({
       $or: [
         { stock: { $lt: 10 } },
-        { datePeremption: { $lte: limite, $gte: aujourdHui } }
-      ]
+        { datePeremption: { $lte: limite, $gte: aujourdHui } },
+      ],
     });
 
     res.json(medicaments);
@@ -90,8 +119,6 @@ const alertesMedicaments = async (req, res) => {
   }
 };
 
-
-
 // Configuration multer pour upload Excel
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -99,7 +126,7 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + "-" + file.originalname);
-  }
+  },
 });
 
 const upload = multer({ storage });
@@ -124,13 +151,15 @@ const importExcel = async (req, res) => {
         prix: row.prix || row.Prix,
         stock: row.stock || row.Stock || 0,
         seuilAlerte: row.seuilAlerte || row.SeuilAlerte || 10,
-        datePeremption: new Date(row.datePeremption || row.DatePeremption)
+        datePeremption: new Date(row.datePeremption || row.DatePeremption),
       });
       medicaments.push(medicament);
     }
 
     await Medicament.insertMany(medicaments);
-    res.json({ message: `${medicaments.length} médicaments importés avec succès` });
+    res.json({
+      message: `${medicaments.length} médicaments importés avec succès`,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -140,14 +169,14 @@ const importExcel = async (req, res) => {
 const exportExcel = async (req, res) => {
   try {
     const medicaments = await Medicament.find();
-    const data = medicaments.map(med => ({
+    const data = medicaments.map((med) => ({
       Nom: med.nom,
       Code: med.code,
       Categorie: med.categorie,
       Prix: med.prix,
       Stock: med.stock,
       SeuilAlerte: med.seuilAlerte,
-      DatePeremption: med.datePeremption.toISOString().split('T')[0]
+      DatePeremption: med.datePeremption.toISOString().split("T")[0],
     }));
 
     const workbook = xlsx.utils.book_new();
@@ -165,13 +194,13 @@ const exportExcel = async (req, res) => {
 };
 
 module.exports = {
-    getMedicaments,
-    getAlerts,
-    addMedicament,
-    updateMedicament,
-    deleteMedicament,
-    alertesMedicaments,
-    importExcel,
-    exportExcel,
-    upload
+  getMedicaments,
+  getAlerts,
+  addMedicament,
+  updateMedicament,
+  deleteMedicament,
+  alertesMedicaments,
+  importExcel,
+  exportExcel,
+  upload,
 };

@@ -14,9 +14,23 @@ const creerClient = async (req, res) => {
 // Obtenir tous les clients
 const getClients = async (req, res) => {
   try {
-    const clients = await Client.find().populate("historiqueAchats.medicament");
+    let { page, limit } = req.params;
+    // console.log("Page:", page);
+
+    const clients = await Client.paginate(
+      {},
+      {
+        page: (page && isNaN(page)) == false ? Number.parseInt(page) : 1,
+        limit: (limit && isNaN(limit)) == false ? Number.parseInt(limit) : 5,
+      }
+    );
+   console.log("✅ Données renvoyées au frontend :", clients);
+
+
     res.json(clients);
   } catch (error) {
+    console.error(error);
+
     res.status(500).json({ message: error.message });
   }
 };
@@ -24,9 +38,12 @@ const getClients = async (req, res) => {
 // Obtenir un client par ID
 const getClientById = async (req, res) => {
   try {
-    const client = await Client.findById(req.params.id).populate("historiqueAchats.medicament");
+    const client = await Client.findById(req.params.id).populate(
+      "historiqueAchats.medicament"
+    );
     if (!client) {
       return res.status(404).json({ message: "Client non trouvé" });
+      
     }
     res.json(client);
   } catch (error) {
@@ -37,7 +54,9 @@ const getClientById = async (req, res) => {
 // Mettre à jour un client
 const updateClient = async (req, res) => {
   try {
-    const client = await Client.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const client = await Client.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
     if (!client) {
       return res.status(404).json({ message: "Client non trouvé" });
     }
@@ -68,13 +87,13 @@ const ajouterAchat = async (req, res) => {
     if (!client) {
       return res.status(404).json({ message: "Client non trouvé" });
     }
-    
+
     client.historiqueAchats.push({
       medicament: medicamentId,
       quantite: quantite,
-      date: new Date()
+      date: new Date(),
     });
-    
+
     await client.save();
     res.json(client);
   } catch (error) {
@@ -82,11 +101,11 @@ const ajouterAchat = async (req, res) => {
   }
 };
 
-module.exports= {
+module.exports = {
   creerClient,
   getClients,
   getClientById,
   updateClient,
   deleteClient,
-ajouterAchat,
-}
+  ajouterAchat,
+};

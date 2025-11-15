@@ -1,10 +1,12 @@
 const GestionUser = require("../models/GestionUsersModel");
 const bcrypt = require("bcryptjs");
+const userModel = require("../models/userModel");
 
 // Liste des utilisateurs
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await GestionUser.find().select("-password");
+    const users = await userModel .find().select("-password");
+    // const users = await userModel.find().select("-password");
     res.json(users);
   } catch (error) {
     console.error("Erreur getAllUsers:", error);

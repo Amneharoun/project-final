@@ -26,7 +26,7 @@ const register = async (req, res) => {
     role = role ? role.toLowerCase() : "pharmacien";
 
     // Vérifie que le rôle est valide
-    const validRoles = ["admin", "pharmacien", "caissier"];
+    const validRoles = ["admin", "pharmacien", "caissier", "patient"];
     if (!validRoles.includes(role)) {
       return res.status(400).json({ message: "Rôle invalide" });
     }
@@ -54,7 +54,7 @@ const register = async (req, res) => {
     });
 
     // Envoi Email
-    await transporter.sendMail({
+    transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: newUser.email,
       subject: "Vérification de votre email",
@@ -106,7 +106,7 @@ const verify = async (req, res) => {
     { new: true }
   );
 
-  res.send({ message: "Utilisateur vérifié ", verifiedUser });
+  res.json({ message: "Utilisateur vérifié ", verifiedUser });
 };
 
 // LOGIN
@@ -135,7 +135,7 @@ const login = async (req, res) => {
 
 
 
-  res.send({
+  res.json({
     message: "Connexion réussie ",
     token,
     user,
@@ -175,7 +175,7 @@ const forgotPassword = async (req, res) => {
         </div>`,
     });
 
-    res.send({
+    res.json({
       message: "Email de réinitialisation envoyé",
       otpToken,
     });
@@ -228,7 +228,7 @@ const resetPassword = async (req, res) => {
       { expiresIn: "24h" }
     );
 
-    res.send({
+    res.json({
       message: "Mot de passe réinitialisé avec succès",
       token,
       user: updatedUser,

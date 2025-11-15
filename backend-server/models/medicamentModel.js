@@ -1,43 +1,49 @@
+// models/medicamentModel.js - CORRIGÉ
 const mongoose = require("mongoose");
-// creat medicament model
-// const medicamentModel = mongoose.model("medicaments", Schema);
+const mongoosepaginte = require("mongoose-paginate-v2");
 
-const medicamentSchema = new mongoose.Schema({
-  nom: {
-    type: String,
-    required: true
+const medicamentSchema = new mongoose.Schema(
+  {
+    nom: {
+      type: String,
+      required: true,
+    },
+    code: {
+      type: String,
+      unique: true,
+      required: true,
+    },
+    categorie: {
+      type: String,
+      required: true,
+    },
+    prix: {
+      type: Number,
+      required: true,
+      min: 0,
+      default: 0,
+    },
+    stock: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    seuilAlerte: {
+      type: Number,
+      default: 10,
+      min: 0,
+    },
+    datePeremption: {
+      type: Date,
+      required: true,
+    },
   },
-  categorie: {
-    type: String,
-    // enum: ["Antibiotique", "Vitamine", "Sirop", "Autre"],
-    required: true
-  },
-  stock: {
-    type: Number,
-    default: 0
-  },
-  prix: {
-    type: Number,
-    required: true,
-    min: 0,
-    default: 0
-  },
-  datePeremption: {
-    type: Date,
-    required: true
-  },
-  code: {
-    type: String,
-    unique: true,
-    required: true
-  },
-  seuilAlerte: {
-    type: Number,
-    default: 10, min: 0
-  }, // alerte si stock < seuil
-}, {
-  timestamps: true
-});
+  {
+    timestamps: true,
+  }
+);
+
+medicamentSchema.plugin(mongoosepaginte);
 
 const medicamentModel = mongoose.model("medicaments", medicamentSchema);
 

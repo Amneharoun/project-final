@@ -15,7 +15,7 @@ const gestionUserSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["admin", "pharmacien", "caissier"],
+    enum: ["admin", "pharmacien", "caissier", "patient"],
     default: "caissier"
   },
   password: {

@@ -1,100 +1,121 @@
+// backend/controllers/dashboardController.js
 const Medicament = require("../models/medicamentModel");
 const Vente = require("../models/venteModel");
+const commande = require("../models/commandeModel");
 
-const overview = async (req, res) => {
-  console.log("Begin", req.originalUrl);
-
+const getDashboardOverview = async (req, res) => {
   try {
-    // const role = req.user.role;
-    const role = req.user.role ? req.user.role.toLowerCase() : null;
+    console.log("📊 Dashboard appelé pour:", req.user.email);
+    
+    const userId = req.user.id;
+    const userRole = req.user.role;
 
-    const today = new Date();
-    const next30Days = new Date();
-    next30Days.setDate(today.getDate() + 30);
+    // 🔹 RÉCUPÉRATION DES VRAIES DONNÉES
 
-    // 🔹 Médicaments avec stock faible
-    const lowStockCount = await Medicament.countDocuments({ stock: { $lte: 5 } });
+    // 1. Médicaments en rupture (stock = 0)
+    const medicamentsRupture = await Medicament.find({ 
+      stock: 0 
+    }).select("nom stock datePeremption").limit(10);
 
-    // 🔹 Médicaments qui expirent dans les 30 jours
-    const expiringCount = await Medicament.countDocuments({
-      datePeremption: { $lte: next30Days },
-    });
+    // 2. Médicaments avec stock faible (stock <= 5)
+    const medicamentsStockFaible = await Medicament.find({ 
+      stock: { $lte: 5, $gt: 0 } 
+    }).select("nom stock").limit(10);
 
-    // 🔹 Chiffre d'affaires des 30 derniers jours
-    const last30Days = new Date();
-    last30Days.setDate(last30Days.getDate() - 30);
-    const revenueData = await Vente.aggregate([
-      {
-        $match: {
-          dateVente: { $gte: last30Days },
-        },
-      },
-      {
-        $group: { _id: null, total: { $sum: "$total" } },
-      },
-    ]);
-    const revenue30d = revenueData.length > 0 ? revenueData[0].total : 0;
+    // 3. Médicaments bientôt périmés (30 prochains jours)
+    const trenteJours = new Date();
+    trenteJours.setDate(trenteJours.getDate() + 30);
+    
+    const medicamentsPeremption = await Medicament.find({
+      datePeremption: { 
+        $lte: trenteJours,
+        $gte: new Date() // aujourd'hui
+      }
+    }).select("nom datePeremption stock").limit(10);
 
-    // 🔹 Top 10 produits vendus
-    const topProducts = await Vente.aggregate([
-      { $unwind: "$medicaments" },
+    // 4. Statistiques de réservations (30 derniers jours)
+    const trenteJoursPasses = new Date();
+    trenteJoursPasses.setDate(trenteJoursPasses.getDate() - 30);
+    
+    const commandesStats = await commande.aggregate([
+      // {
+      //   $match: {
+      //     createdAt: { $gte: trenteJoursPasses }
+      //   }
+      // },
       {
         $group: {
-          _id: "$medicaments.medicament",
-          qty: { $sum: "$medicaments.quantite" },
-        },
-      },
-      { $sort: { qty: -1 } },
-      { $limit: 10 },
-      {
-        $lookup: {
-          from: "medicaments",
-          localField: "_id",
-          foreignField: "_id",
-          as: "medInfo"
-        }
-      },
-      { $unwind: "$medInfo" },
-      {
-        $project: {
-          _id: 1,
-          qty: 1,
-          name: "$medInfo.nom"
+          _id: "$statut",
+          count: { $sum: 1 }
         }
       }
     ]);
+    console.log(commandesStats);
+    
 
-    // Données de ventes pour le graphique
-    const sales = [
-      { mois: "Janvier", valeur: 100 },
-      { mois: "Février", valeur: 130 },
-      { mois: "Mars", valeur: 110 },
-      { mois: "Avril", valeur: 105 },
-      { mois: "Mai", valeur: 140 },
-      { mois: "Juin", valeur: 180 },
-      { mois: "Juillet", valeur: 150 },
-    ];
+    // 5. Top médicaments (les plus en stock ou les plus vendus)
+    const topMedicaments = await Medicament.find()
+      .sort({ stock: -1 })
+      .limit(5)
+      .select("nom stock");
 
-    // Médicaments en rupture
-    const medicamentsRupture = await Medicament.find({ stock: { $lte: 5 } })
-      .select("nom stock")
-      .limit(10);
+    // 🔹 CALCUL DES STATISTIQUES
+    const lowStockCount = medicamentsStockFaible.length;
+    const expiringCount = medicamentsPeremption.length;
+    const ruptureCount = medicamentsRupture.length;
 
-    console.log("End", req.originalUrl);
-
-    res.json({
+    // Données réelles du dashboard
+    const dashboardData = {
+      // Statistiques principales
       lowStockCount,
       expiringCount,
-      revenue30d,
-      topProducts,
-      sales,
+      ruptureCount,
+      totalMedicaments: await Medicament.countDocuments(),
+      
+      // Données réelles
       medicamentsRupture,
-      role
-    });
-  } catch (err) {
-    console.error("Erreur Dashboard:", err);
-    res.status(500).json({ message: "Erreur serveur dashboard" });
-  }
-}
+      medicamentsStockFaible, 
+      medicamentsPeremption,
+      topMedicaments,
+      
+      // Réservations (convertir l'agrégation en objet simple)
+      commandes: {
+        total: commandesStats.reduce((acc, curr) => acc + curr.count, 0),
+        pending: commandesStats.find(r => r._id === 'En attente')?.count || 0,
+        // confirmed: commandesStats.find(r => r._id === 'confirmed')?.count || 0,
+        completed: commandesStats.find(r => r._id === 'Livrée')?.count || 0,
+        canceled: commandesStats.find(r => r._id === 'Annulée')?.count || 0,
+      },
+      
+      // Données simulées (en attendant vos modèles de vente)
+      revenue30d: 12500.50, // À remplacer par de vraies données plus tard
+      sales: [
+        { mois: "Janvier", valeur: 100 },
+        { mois: "Février", valeur: 130 },
+        { mois: "Mars", valeur: 110 }
+      ],
+      
+      role: userRole
+    };
 
-module.exports = overview;
+    console.log("📊 Données réelles chargées:", {
+      ruptures: ruptureCount,
+      stockFaible: lowStockCount,
+      peremption: expiringCount,
+      commandes: dashboardData.commandes.total
+    });
+
+    res.json(dashboardData);
+
+  } catch (err) {
+    console.error("❌ Erreur Dashboard:", err);
+    res.status(500).json({ 
+      message: "Erreur serveur dashboard",
+      error: err.message 
+    });
+  }
+};
+
+module.exports = {
+  getDashboardOverview
+};

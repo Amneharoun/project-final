@@ -1,17 +1,23 @@
+const { required } = require("joi");
 const mongoose = require("mongoose");
 
 const venteSchema = new mongoose.Schema({
-  client: { type: mongoose.Schema.Types.ObjectId, ref: "Client" },
+  client: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Client",
+    required: true,
+  },
   medicaments: [
     {
       medicament: { type: mongoose.Schema.Types.ObjectId, ref: "medicaments" },
-      quantite: Number,
-      prix: Number
-    }
+      quantite: { type: Number, required: true },
+      prix: { type: Number, required: true },
+      reduction: { type: Number, required: true },
+      prixReduit: { type: Number, required: true },
+    },
   ],
-  total: Number,
+  total: { type: Number, required: true },
   dateVente: { type: Date, default: Date.now },
-  reduction: Number
 });
 
 module.exports = mongoose.model("Vente", venteSchema);

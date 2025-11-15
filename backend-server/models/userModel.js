@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["admin", "pharmacien", "caissier"], // mets en minuscule 
+      enum: ["admin", "pharmacien", "caissier", "patient"], // mets en minuscule 
     },
   },
   { timestamps: true }

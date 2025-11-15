@@ -15,6 +15,7 @@ const FactureSchema = new mongoose.Schema({
     default: "En attente",
   },
   items: [ItemSchema],
+  total: { type: Number, required: true },
 });
 
 module.exports = mongoose.model("Facture", FactureSchema);
