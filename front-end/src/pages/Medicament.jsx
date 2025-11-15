@@ -1,3 +1,4 @@
+// src/pages/Medicaments.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -29,14 +30,19 @@ const Medicaments = () => {
     } else {
       fetchMeds(page, limit);
     }
-    
   }, [page, limit]);
 
   // 🔹 Charger les médicaments
   const fetchMeds = async (page, limit) => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/medicaments/${page}/${limit}`
+        `http://localhost:5000/medicaments/${page}/${limit}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
       );
       const data = res.data;
       console.log("Data", typeof data);
@@ -67,10 +73,24 @@ const Medicaments = () => {
     e.preventDefault();
     try {
       if (editingId) {
-        await axios.put(`http://localhost:5000/medicaments/${editingId}`, form);
+        await axios.put(
+          `http://localhost:5000/medicaments/${editingId}`,
+          form,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
         alert(" Médicament modifié");
       } else {
-        await axios.post("http://localhost:5000/medicaments", form);
+        await axios.post("http://localhost:5000/medicaments", form, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
         alert("Médicament ajouté");
       }
       setForm({
@@ -94,7 +114,16 @@ const Medicaments = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Supprimer ce médicament ?")) return;
     try {
-      await axios.delete(`http://localhost:5000/medicaments/${id}`);
+      await axios.delete(`http://localhost:5000/medicaments/${id}`,
+
+        
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+      );
       alert(" Médicament supprimé");
       fetchMeds();
     } catch (err) {
@@ -270,7 +299,7 @@ const Medicaments = () => {
         <tbody>
           {filteredMeds.length == 0 && (
             <tr>
-              <td colSpan="8" style={{textAlign: 'center', color: 'red'}}>
+              <td colSpan="8" style={{ textAlign: "center", color: "red" }}>
                 Aucun médicament correspondant n'est trouvé.
               </td>
             </tr>

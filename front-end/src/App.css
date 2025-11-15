@@ -50,7 +50,7 @@ select, input[type="tel"] {
   flex: 1;
 }
 
-button {
+/* button {
   width: 100%;
   padding: 12px;
   background-color: black;
@@ -63,4 +63,4 @@ button {
 
 button:hover {
   background-color: #333;
-}
+} */

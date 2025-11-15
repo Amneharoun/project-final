@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import API_URL from "../config";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -21,34 +22,44 @@ const Login = () => {
   };
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage("");
+  e.preventDefault();
+  setLoading(true);
+  setMessage("");
 
-    try {
-      const response = await fetch("http://localhost:5000/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
+  try {
+    const response = await fetch(`${API_URL}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
 
-      const data = await response.json();
+    const data = await response.json();
 
-      if (response.ok) {
-        // ✅ Use context to store and decode token
-        login(data.token);
-        setMessage("Connexion réussie !");
-        navigate("/dashboard");
+    if (response.ok) {
+      // ✅ Sauvegarde du token et du rôle
+      login(data.token);
+      localStorage.setItem("role", data.role);
+
+      setMessage("Connexion réussie !");
+      console.log("Connexion réussie !");
+
+      // ✅ Redirection selon le rôle
+      if (data.role === "patient") {
+        navigate("/medicament");
       } else {
-        setMessage(data.message || "Erreur lors de la connexion");
+        navigate("/dashboard");
       }
-    } catch (err) {
-      console.error(err);
-      setMessage("Erreur serveur. Veuillez réessayer.");
-    } finally {
-      setLoading(false);
+    } else {
+      setMessage(data.message || "Erreur lors de la connexion");
     }
-  };
+  } catch (err) {
+    console.error(err);
+    setMessage("Erreur serveur. Veuillez réessayer.");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleForgotPassword = async () => {
     if (!forgotEmail) return setMessage("Veuillez saisir votre email.");

@@ -33,7 +33,7 @@ export default function ExcelPage() {
 
   return (
     <div className="container mt-5">
-      <h3>📑 Import / Export Excel (Médicaments)</h3>
+      <h3><i class="bi bi-cloud-arrow-up"></i> Import / Export Excel (Médicaments)</h3>
 
       <div className="mb-3">
         <input type="file" className="form-control" accept=".xlsx, .xls" onChange={handleFileChange} />

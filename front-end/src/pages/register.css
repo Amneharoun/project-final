@@ -22,17 +22,14 @@
   margin-top: 1rem;
   font-size: 1rem;
 }
-
+/* 
 .register-form button {
-  background-color: #4CAF50;
+  background-color: #2ec0f5;
   color: white;
   border: none;
   cursor: pointer;
-}
+} */
 
-.register-form button:hover {
-  background-color: #45a049;
-}
 
 .register-message {
   /* margin-top: 1rem; */

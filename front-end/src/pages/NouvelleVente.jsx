@@ -17,10 +17,22 @@ const NouvelleVente = () => {
     const fetchData = async () => {
       try {
         const resClients = await axios.get(
-          "http://localhost:5000/clients/1/1000"
+          "http://localhost:5000/clients/1/1000",
+          {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
         );
         const resMeds = await axios.get(
-          "http://localhost:5000/medicaments/1/1000"
+          "http://localhost:5000/medicaments/1/1000",
+          {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
         );
         setClients(resClients.data.docs || []);
         setMedicaments(resMeds.data.docs || []);
@@ -64,7 +76,13 @@ const NouvelleVente = () => {
 
       const res = await axios.post(
         "http://localhost:5000/ventes/ventes",
-        vente
+        vente,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
       );
       setMessage("✅ Vente enregistrée avec succès !");
       console.log("Nouvelle Vente : ", res.data);

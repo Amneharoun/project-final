@@ -15,6 +15,7 @@ export const AuthProvider = ({ children }) => {
         setRole(decoded.role);
         setUser(decoded.email);
         setIsAuthenticated(true);
+        
       } catch (err) {
         console.error("Invalid token:", err);
         localStorage.clear();
@@ -28,12 +29,13 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(false);
     }
   };
-
+  
   useEffect(() => {
     loadUserFromToken();
     window.addEventListener("storage", loadUserFromToken);
+    console.log(`User authenticated successfully with email ${user} and role ${role}`);
     return () => window.removeEventListener("storage", loadUserFromToken);
-  }, []);
+  }, [user, role]);
 
   const login = (token) => {
     localStorage.setItem("token", token);

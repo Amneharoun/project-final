@@ -93,9 +93,10 @@ const Register = () => {
           <option value="pharmacien">Pharmacien</option>
           <option value="admin">Admin</option>
           <option value="caissier">Caissier</option>
+          <option value="patient">patient</option>
         </select>
 
-        <button type="submit" disabled={loading}>
+        <button type="submit" className='btn btn-primary' disabled={loading}>
           {loading ? 'Création...' : 'Créer un compte'}
         </button>
       </form>

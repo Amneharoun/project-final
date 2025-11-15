@@ -49,7 +49,7 @@ const ResetPassword = () => {
                 <div className="col-md-5">
                     <div className="card shadow">
                         <div className="card-body">
-                            <h3 className="card-title mb-4 text-center">Réinitialiser le mot de passe</h3>
+                            <h3 className="card-title mb-5 text-center">Réinitialiser le mot de passe</h3>
                             {message && <div className="alert alert-info">{message}</div>}
                             <form onSubmit={handleSubmit}>
                                 <div className="mb-3">
@@ -85,7 +85,7 @@ const ResetPassword = () => {
                                     />
                                 </div>
 
-                                <button type="submit" className="btn btn-primary w-100" disabled={loading}>
+                                <button type="submit" className="btn btn-primary mb-5 " disabled={loading}>
                                     {loading ? "En cours..." : "Réinitialiser"}
                                 </button>
                             </form>

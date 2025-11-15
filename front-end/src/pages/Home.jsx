@@ -1,72 +1,46 @@
 import React from "react";
-import './home.css'; // ton fichier CSS personnalisé
+import "bootstrap/dist/css/bootstrap.min.css";
+
+import Aboukomba from '../assets/aboukoumba.png';
+
 
 const Home = () => {
   return (
-
-<>
-    {/* <main className="home"> */}
-      <div className="container home " id="container-home">
+    <section className="container-fluid bg-light py-5 min-vh-100 d-flex align-items-center">
+      <div className="container">
         <div className="row align-items-center">
-          <div className="col-md-6" id="title">
-            <h1 className="display-4"> Bienvenue sur Medi</h1>
-            <p>
-             la solution digitale pour trouver vos médicaments en un seul clic.
-              Gagnez du temps, vérifiez la disponibilité, et localisez votre pharmacie la plus proche.
+          {/* Illustration */}
+          <div className="col-md-6 mb-4 mb-md-0">
+            <img
+              src={Aboukomba} 
+              alt="Pharmacie illustration"
+              className="img-fluid"
+            />
+          </div>
+
+          {/* Texte */}
+          <div className="col-md-6 text-center text-md-start">
+            <h1 className="display-4 fw-bold text-primary mb-3">
+              Bienvenue sur <span className="text-success">Medi</span>
+            </h1>
+            <p className="lead text-muted mb-4">
+              La solution digitale pour trouver vos médicaments en un seul clic.
+              <br />
+              Gagnez du temps, vérifiez la disponibilité, et localisez votre
+              pharmacie la plus proche.
             </p>
+            <div className="d-flex gap-3 justify-content-center justify-content-md-start">
+              <button className="btn btn-primary btn-lg px-4 rounded-pill shadow-sm">
+                Commencer
+              </button>
+              <button className="btn btn-outline-secondary btn-lg px-4 rounded-pill">
+                En savoir plus
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    {/* </main> */}
-        <section className="container my-5" id="services">
-  <h2 className="text-center mb-4">Nos Services</h2>
-  <div className="row">
-    <div className="col-md-4">
-      <div className="card">
-        <div className="card-body">
-          <h5 className="card-title">Recherche de médicaments</h5>
-          <p className="card-text">Recherchez rapidement un médicament dans toutes les pharmacies disponibles d'abeche.</p>
-        </div>
-      </div>
-    </div>
-    <div className="col-md-4">
-      <div className="card">
-        <div className="card-body">
-          <h5 className="card-title">Alertes de stock</h5>
-          <p className="card-text">Soyez informé en cas de rupture ou expiration proche d’un médicament.</p>
-        </div>
-      </div>
-    </div>
-    <div className="col-md-4">
-      <div className="card">
-        <div className="card-body">
-          <h5 className="card-title">Gestion des ventes</h5>
-          <p className="card-text">Suivi des ventes, factures, et historique de chaque client/patient.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section className="container my-5" id="contact">
-  <h2 className="text-center mb-4">Contactez-nous</h2>
-  <form>
-    <div className="mb-3">
-      <label htmlFor="name" className="form-label">Nom</label>
-      <input type="text" className="form-control" id="name" />
-    </div>
-    <div className="mb-3">
-      <label htmlFor="email" className="form-label">Email</label>
-      <input type="email" className="form-control" id="email" />
-    </div>
-    <div className="mb-3">
-      <label htmlFor="message" className="form-label">Message</label>
-      <textarea className="form-control" id="message" rows="4"></textarea>
-    </div>
-    <button type="submit" className="btn btn-success">Envoyer</button>
-  </form>
-</section>
-</>
+    </section>
   );
 };
 

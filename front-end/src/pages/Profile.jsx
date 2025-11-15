@@ -18,7 +18,7 @@ export default function Profile() {
   return (
     <div className="container mt-4">
       <div className="card shadow-sm p-4">
-        <h3 className="mb-3">👤 Mon Profil</h3>
+        <h3 className="mb-3"><i class="bi bi-person-fill"></i> Mon Profil</h3>
         <p><strong>Nom :</strong> {user.nom}</p>
         <p><strong>Email :</strong> {user.email}</p>
         <p><strong>Rôle :</strong> {user.role}</p>
