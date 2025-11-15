@@ -2,6 +2,9 @@ import React, { useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
+import Aboukomba from '../assets/aboukoumba.png';
+
+
 const Navbar = () => {
   const { user, role, isAuthenticated, logout } = useContext(AuthContext);
   const location = useLocation();
@@ -21,7 +24,7 @@ const Navbar = () => {
       <div className="container-fluid">
         <Link className="navbar-brand fw-bold d-flex align-items-center" to="/">
           <img
-            src="/src/assets/aboukoumba.png"
+            src={Aboukomba}
             alt="Pharmacie Logo"
             style={{
               width: "40px",
@@ -72,20 +75,7 @@ const Navbar = () => {
                   role="button"
                   data-bs-toggle="dropdown"
                 >
-                  <i className="fas fa-cog me-1"></i> Administration
                 </a>
-                <ul className="dropdown-menu">
-                  <li>
-                    <Link className="dropdown-item" to="/utilisateurs">
-                      <i className="fas fa-user-cog me-2"></i> Utilisateurs
-                    </Link>
-                  </li>
-                  <li>
-                    <Link className="dropdown-item" to="/medicament">
-                      <i className="fas fa-file-import me-2"></i> Import / Export
-                    </Link>
-                  </li>
-                </ul>
               </li>
             )}
           </ul>

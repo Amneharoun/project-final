@@ -1,4 +1,7 @@
 import { Link } from "react-router-dom";
+
+import Logo from '../assets/logo.png';
+
 const Header = () => {
     return (
         <>
@@ -6,7 +9,7 @@ const Header = () => {
                 {/* <nav className="navbar bg-primary" data-bs-theme="dark"> */}
                 {/* <div className="container-fluid"> */}
                 <div className="Col-md-6" id="Col" >
-                    <img src="/src/assets/logo.png" alt="App preview" className="img-fluid" />
+                    <img src={Logo} alt="App preview" className="img-fluid" />
                 </div>
                 <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
