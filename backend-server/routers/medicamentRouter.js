@@ -57,6 +57,10 @@ router.get("/alertes", alertesMedicaments);
 
 
 // ✅ CRUD Médicaments
+
+// ✅ Export : pour tous les utilisateurs connectés
+router.get("/export", exportExcel);
+
 // ✅ Lecture : pour tous les utilisateurs connectés
 router.get("/:page/:limit", verifyRole("admin", "pharmacien, caissier"),getMedicaments);
 
@@ -78,8 +82,5 @@ router.post(
   upload.single("file"),
   importExcel
 );
-
-// ✅ Export : pour tous les utilisateurs connectés
-router.get("/export", exportExcel);
 
 module.exports = router;

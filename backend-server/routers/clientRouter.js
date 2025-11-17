@@ -9,15 +9,17 @@ const {
   ajouterAchat
 } = require("../controllers/clientController");
 
-// Routes CRUD pour clients
+// ✅ SPECIFIC ROUTES FIRST
+router.post("/achat", ajouterAchat);
+
+// ✅ Use prefixes to avoid conflicts
+router.get("/list/:page/:limit", getClients);  // Changed from /:page/:limit
+
+// ✅ CRUD routes with :id
 router.post("/", creerClient);
-router.get("/:page/:limit", getClients);
 router.get("/:id", getClientById);
 router.put("/:id", updateClient);
 router.delete("/:id", deleteClient);
-
-// Route pour ajouter un achat à l'historique
-router.post("/achat", ajouterAchat);
 
 module.exports = router;
 // const express = require("express");
