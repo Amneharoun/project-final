@@ -12,7 +12,7 @@ const clientRouter = require("./routers/clientRouter");
 const commandeRouter = require("./routers/commandeRouter");
 const gestionUserRoutes = require("./routers/GestionUserAuter");
 const factureRoutes = require("./routers/factureRoute");
-const userRoutes = require("./routers/authRouter");
+// const userRoutes = require("./routers/authRouter");
 const excelRoutes = require("./routers/excelRoute");
 const pharmacieRouter = require("./routers/pharRouter");
 
@@ -21,7 +21,8 @@ const corsOption = {
 };
 
 const app = express();
-app.use(cors());
+app.use(cors({ origin: "*" }));
+
 app.use(express.static('client'))
 app.use(express.json());
 app.use(morgan("dev"));
@@ -41,7 +42,7 @@ app.use("/clients", clientRouter);
 app.use("/commandes", commandeRouter);
 app.use("/gestion-users", gestionUserRoutes);
 app.use("/factures", factureRoutes);
-app.use("/users", userRoutes);
+// app.use("/users", userRoutes);
 app.use("/excel", excelRoutes);
 app.use("/pharmacies", pharmacieRouter);
 
