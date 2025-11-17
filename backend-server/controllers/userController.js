@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const { v4 } = require("uuid");
 const generateOTP = require("../utils/generateOTP");
-const transporter = require("../utils/mailTransporter");
+const sendMail = require("../utils/mailTransporter");
 const Vente = require("../models/venteModel");
 const Medicament = require("../models/medicamentModel");
 const Fournisseur = require("../models/fournisserModel");
@@ -54,17 +54,21 @@ const register = async (req, res) => {
     });
 
     // Envoi Email
-    transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: newUser.email,
-      subject: "Vérification de votre email",
-      html: `
-        <h1>Vérification Email</h1>
-        <p>Voici votre code de vérification :</p>
-        <h2>${otp}</h2>
-        <p>Merci de le saisir dans l'application pour activer votre compte.</p>
-      `,
-    });
+    try {
+      sendMail({
+        email: newUser.email,
+        otp: otp,
+      });
+    } catch (error) {
+      console.log("\nUne erreur est survenue lors de l'evoie de l'email\n");
+      console.log(error);
+
+      await User.findOneAndDelete({ email });
+      await OtpModel.findByIdAndDelete({
+        otpToken,
+        purpose: "verify-email",
+      });
+    }
 
     res.status(201).send({
       message: "Utilisateur créé. Vérification email envoyée.",
@@ -76,8 +80,6 @@ const register = async (req, res) => {
     res.status(500).json({ message: "Erreur serveur" });
   }
 };
-
-
 
 // VERIFY OTP
 const verify = async (req, res) => {
@@ -92,7 +94,7 @@ const verify = async (req, res) => {
     return res.status(404).send({ message: "OTP introuvable" });
   }
   console.log("OTP Details", otpDetails);
-  console.log("OTP", typeof (otp));
+  console.log("OTP", typeof otp);
 
   if (otp != otpDetails.otp) {
     console.log("Code OTP invalide");
@@ -127,13 +129,11 @@ const login = async (req, res) => {
     {
       userId: user._id,
       email: user.email,
-      role: user.role
+      role: user.role,
     },
     process.env.JWT_SECRET,
     { expiresIn: "24h" }
   );
-
-
 
   res.json({
     message: "Connexion réussie ",
@@ -193,7 +193,10 @@ const resetPassword = async (req, res) => {
 
   try {
     // Vérifier OTP
-    const otpDetails = await OtpModel.findOne({ otpToken, purpose: "reset-password" });
+    const otpDetails = await OtpModel.findOne({
+      otpToken,
+      purpose: "reset-password",
+    });
     if (!otpDetails) {
       return res.status(404).send({ message: "OTP non trouvé" });
     }
@@ -242,7 +245,6 @@ const resetPassword = async (req, res) => {
   }
 };
 
-
 // Créer une vente
 const creerVente = async (req, res) => {
   try {
@@ -251,15 +253,18 @@ const creerVente = async (req, res) => {
 
     for (const item of medicaments) {
       const med = await Medicament.findById(item.medicament);
-      if (!med) return res.status(404).json({ message: "Médicament introuvable" });
+      if (!med)
+        return res.status(404).json({ message: "Médicament introuvable" });
 
       if (med.stock < item.quantite) {
-        return res.status(400).json({ message: `Stock insuffisant pour ${med.nom}` });
+        return res
+          .status(400)
+          .json({ message: `Stock insuffisant pour ${med.nom}` });
       }
 
       total += item.prix * item.quantite;
       const stock = med.stock - item.quantite;
-      await Medicament.findByIdAndUpdate(item.medicament, { stock, new: true, },);
+      await Medicament.findByIdAndUpdate(item.medicament, { stock, new: true });
     }
 
     const vente = await Vente.create({
@@ -281,10 +286,11 @@ const getVentes = async (req, res) => {
     const ventes = await Vente.find().populate("medicaments.medicament");
     res.json(ventes);
   } catch (err) {
-    res.status(500).json({ message: "Erreur serveur lors du chargement des ventes" });
+    res
+      .status(500)
+      .json({ message: "Erreur serveur lors du chargement des ventes" });
   }
 };
-
 
 const ajouterFournisseur = async (req, res) => {
   try {
@@ -313,7 +319,8 @@ const getProfile = async (req, res) => {
     const user = await User.findById(req.user.userId)
       // .select("-__id -password -isVerified -createdAt -updatedAt -__v");
       .select("name email role createdAt");
-    if (!user) return res.status(404).json({ message: "Utilisateur introuvable" });
+    if (!user)
+      return res.status(404).json({ message: "Utilisateur introuvable" });
     res.json(user);
   } catch (err) {
     console.error("Erreur profil:", err);
@@ -321,8 +328,15 @@ const getProfile = async (req, res) => {
   }
 };
 
-
-
-
-
-module.exports = { register, verify, login, creerVente, getVentes, listeFournisseurs, ajouterFournisseur, forgotPassword, resetPassword, getProfile };
+module.exports = {
+  register,
+  verify,
+  login,
+  creerVente,
+  getVentes,
+  listeFournisseurs,
+  ajouterFournisseur,
+  forgotPassword,
+  resetPassword,
+  getProfile,
+};
