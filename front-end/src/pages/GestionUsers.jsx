@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import API_URL from "../config";
 
 export default function GestionUsers() {
   const [utilisateurs, setUtilisateurs] = useState([]);
@@ -19,7 +20,7 @@ export default function GestionUsers() {
 
   const fetchUtilisateurs = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/gestion-users", {
+      const response = await axios.get(`${API_URL}/gestion-users`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       setUtilisateurs(response.data);
@@ -33,7 +34,7 @@ export default function GestionUsers() {
     try {
       if (editMode) {
         await axios.put(
-          `http://localhost:5000/gestion-users/${currentUser._id}`,
+          `${API_URL}/gestion-users/${currentUser._id}`,
           formData,
           {
             headers: {
@@ -42,7 +43,7 @@ export default function GestionUsers() {
           }
         );
       } else {
-        await axios.post("http://localhost:5000/gestion-users/", formData, {
+        await axios.post(`${API_URL}/gestion-users/`, formData, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
       }
@@ -71,7 +72,7 @@ export default function GestionUsers() {
       window.confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur ?")
     ) {
       try {
-        await axios.delete(`http://localhost:5000/gestion-users/${id}`, {
+        await axios.delete(`${API_URL}/gestion-users/${id}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         fetchUtilisateurs();

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import API_URL from "../config";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -23,9 +24,9 @@ const Dashboard = () => {
   const fetchStats = async () => {
     try {
       const [medRes, ventesRes, alertRes] = await Promise.all([
-        axios.get("http://localhost:5000/medicaments"),
-        axios.get("http://localhost:5000/auth/getVentes"),
-        axios.get("http://localhost:5000/medicaments/alerts"),
+        axios.get(`${API_URL}/medicaments`),
+        axios.get(`${API_URL}/auth/getVentes`),
+        axios.get(`${API_URL}/medicaments/alerts`),
       ]);
 
       setStats({

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import API_URL from "../config";
 
 const NouvelleVente = () => {
   const [clients, setClients] = useState([]);
@@ -17,7 +18,7 @@ const NouvelleVente = () => {
     const fetchData = async () => {
       try {
         const resClients = await axios.get(
-          "http://localhost:5000/clients/1/1000",
+          `${API_URL}/clients/1/1000`,
           {
           headers: {
             "Content-Type": "application/json",
@@ -26,7 +27,7 @@ const NouvelleVente = () => {
         }
         );
         const resMeds = await axios.get(
-          "http://localhost:5000/medicaments/1/1000",
+          `${API_URL}/medicaments/1/1000`,
           {
           headers: {
             "Content-Type": "application/json",
@@ -75,7 +76,7 @@ const NouvelleVente = () => {
       console.log(vente);
 
       const res = await axios.post(
-        "http://localhost:5000/ventes/ventes",
+        `${API_URL}/ventes/ventes`,
         vente,
         {
           headers: {
@@ -96,7 +97,7 @@ const NouvelleVente = () => {
       // }));
 
       // // Créer la facture
-      // const resFacture = await axios.post("http://localhost:5000/factures", {
+      // const resFacture = await axios.post(`${API_URL}/factures", {
       //   client: res.data.client.nom,
       //   date: res.data.dateVente,
       //   items,

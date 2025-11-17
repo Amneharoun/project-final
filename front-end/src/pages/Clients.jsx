@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import API_URL from "../config";
 
 export default function Clients() {
   const [clients, setClients] = useState([]);
@@ -17,7 +18,7 @@ export default function Clients() {
   const fetchClients = async (page, limit) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/clients/${page}/${limit}`
+        `${API_URL}/clients/${page}/${limit}`
       );
       console.log("🧾 Réponse backend :", response.data);
 
@@ -34,11 +35,11 @@ export default function Clients() {
     try {
       if (editingClient) {
         await axios.put(
-          `http://localhost:5000/clients/${editingClient._id}`,
+          `${API_URL}/clients/${editingClient._id}`,
           formData
         );
       } else {
-        await axios.post("http://localhost:5000/clients", formData);
+        await axios.post("`${API_URL}/clients", formData);
       }
       fetchClients(page, limit); // ✅ toujours passer page et limit
       resetForm();
@@ -50,7 +51,7 @@ export default function Clients() {
   const handleDelete = async (id) => {
     if (window.confirm("Êtes-vous sûr de vouloir supprimer ce client ?")) {
       try {
-        await axios.delete(`http://localhost:5000/clients/${id}`);
+        await axios.delete(`${API_URL}/clients/${id}`);
         fetchClients(page, limit);
       } catch (error) {
         console.error("Erreur lors de la suppression:", error);

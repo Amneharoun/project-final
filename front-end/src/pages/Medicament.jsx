@@ -1,6 +1,7 @@
 // src/pages/Medicaments.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import API_URL from "../config";
 
 const Medicaments = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -36,7 +37,7 @@ const Medicaments = () => {
   const fetchMeds = async (page, limit) => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/medicaments/${page}/${limit}`,
+       `${API_URL}/medicaments/${page}/${limit}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -74,7 +75,7 @@ const Medicaments = () => {
     try {
       if (editingId) {
         await axios.put(
-          `http://localhost:5000/medicaments/${editingId}`,
+          `${API_URL}/medicaments/${editingId}`,
           form,
           {
             headers: {
@@ -85,7 +86,7 @@ const Medicaments = () => {
         );
         alert(" Médicament modifié");
       } else {
-        await axios.post("http://localhost:5000/medicaments", form, {
+        await axios.post("`${API_URL}/medicaments", form, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -114,7 +115,7 @@ const Medicaments = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Supprimer ce médicament ?")) return;
     try {
-      await axios.delete(`http://localhost:5000/medicaments/${id}`,
+      await axios.delete(`${API_URL}/medicaments/${id}`,
 
         
           {

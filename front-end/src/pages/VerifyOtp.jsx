@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 
+import API_URL from '../config';
+
 const VerifyOtp = () => {
   const [otp, setOtp] = useState('');
   //   const [otpToken, setOtpToken] = useState('');
@@ -16,7 +18,7 @@ const VerifyOtp = () => {
 
     try {
       const otpToken = localStorage.getItem("otpToken");
-      const response = await fetch('http://localhost:5000/auth/email-verify', {
+      const response = await fetch(`${API_URL}/auth/email-verify`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

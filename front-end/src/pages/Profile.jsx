@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import API_URL from "../config";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/auth/profile", {
+      .get(`${API_URL}/auth/profile`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
       })
       .then((res) => setUser(res.data))

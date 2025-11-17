@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate} from "react-router-dom";
-
+import API_URL from "../config";
 const ResetPassword = () => {
     const navigate = useNavigate();
     const [password, setPassword] = useState("");
@@ -18,7 +18,7 @@ const ResetPassword = () => {
         setLoading(true);
         const otpToken = localStorage.getItem("otpToken");
         try {
-            const response = await fetch("http://localhost:5000/auth/reset-password", {
+            const response = await fetch(`${API_URL}/auth/reset-password`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ otp, otpToken, password }),

@@ -65,7 +65,7 @@ const Login = () => {
     if (!forgotEmail) return setMessage("Veuillez saisir votre email.");
 
     try {
-      const response = await fetch("http://localhost:5000/auth/forgot-password", {
+      const response = await fetch(`${API_URL}/auth/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: forgotEmail }),

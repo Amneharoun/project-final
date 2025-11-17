@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import API_URL from "../config";
 
 export default function Commandes() {
   const [commandes, setCommandes] = useState([]);
@@ -18,7 +19,7 @@ export default function Commandes() {
 
   const fetchCommandes = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/commandes");
+      const response = await axios.get(`${API_URL}/commandes`);
       setCommandes(response.data);
     } catch (error) {
       console.error("Erreur lors du chargement des commandes:", error);
@@ -28,7 +29,7 @@ export default function Commandes() {
   const fetchFournisseurs = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/auth/listeFournisseurs"
+        `${API_URL}/auth/listeFournisseurs`
       );
       setFournisseurs(response.data);
     } catch (error) {
@@ -39,7 +40,7 @@ export default function Commandes() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/commandes", formData);
+      await axios.post(`${API_URL}/commandes`, formData);
       fetchCommandes();
       resetForm();
     } catch (error) {
@@ -49,7 +50,7 @@ export default function Commandes() {
 
   const updateStatut = async (id, newStatut) => {
     try {
-      await axios.put(`http://localhost:5000/commandes/${id}/statut`, {
+      await axios.put(`${API_URL}/commandes/${id}/statut`, {
         statut: newStatut,
       });
       fetchCommandes();
@@ -61,7 +62,7 @@ export default function Commandes() {
   const handleDelete = async (id) => {
     if (window.confirm("Êtes-vous sûr de vouloir supprimer cette commande ?")) {
       try {
-        await axios.delete(`http://localhost:5000/commandes/${id}`);
+        await axios.delete(`${API_URL}/commandes/${id}`);
         fetchCommandes();
       } catch (error) {
         console.error("Erreur lors de la suppression:", error);

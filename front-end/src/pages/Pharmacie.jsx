@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import API_URL from "../config";
 
 // Fix pour les icônes Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -60,7 +61,7 @@ const Pharmacie = () => {
 
   const fetchPharmacies = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/pharmacies", getAuthHeaders());
+      const res = await axios.get(`${API_URL}/pharmacies`, getAuthHeaders());
       setPharmacies(res.data);
     } catch (error) {
       console.error("Erreur chargement:", error);
@@ -95,14 +96,14 @@ const Pharmacie = () => {
 
       if (editMode) {
         await axios.put(
-          `http://localhost:5000/pharmacies/${formData._id}`, 
+          `${API_URL}/pharmacies/${formData._id}`, 
           dataToSend, 
           getAuthHeaders()
         );
         alert("✅ Pharmacie modifiée avec succès");
       } else {
         await axios.post(
-          "http://localhost:5000/pharmacies", 
+          `${API_URL}/pharmacies`, 
           dataToSend, 
           getAuthHeaders()
         );
@@ -251,7 +252,7 @@ const Pharmacie = () => {
 
     setMapLoading(true);
     try {
-      const response = await axios.get("http://localhost:5000/pharmacies/proches", {
+      const response = await axios.get(`${API_URL}/pharmacies/proches`, {
         params: {
           latitude: patientPosition.latitude,
           longitude: patientPosition.longitude,
@@ -343,7 +344,7 @@ const Pharmacie = () => {
       console.log("🔄 Tentative de suppression...");
       
       const response = await axios.delete(
-        `http://localhost:5000/pharmacies/${id}`,
+        `${API_URL}/pharmacies/${id}`,
         getAuthHeaders()
       );
       
@@ -375,7 +376,7 @@ const Pharmacie = () => {
   const toggleStatut = async (id) => {
     try {
       await axios.patch(
-        `http://localhost:5000/pharmacies/${id}/statut`,
+        `${API_URL}/pharmacies/${id}/statut`,
         {},
         getAuthHeaders()
       );

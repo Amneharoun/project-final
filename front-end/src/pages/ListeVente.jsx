@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import API_URL from "../config";
 
 const ListeVentes = () => {
   const [ventes, setVentes] = useState([]);
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/ventes/getventes")
+      .get(`${API_URL}/ventes/getventes`)
       .then((res) => setVentes(res.data))
       .catch((err) => console.error("Erreur chargement ventes :", err));
   }, []);

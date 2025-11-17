@@ -1,6 +1,7 @@
 // src/pages/Dashboard.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import API_URL from "../config";
 
 export default function Dashboard() {
   const [data, setData] = useState(null);
@@ -15,7 +16,7 @@ export default function Dashboard() {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        "http://localhost:5000/dashboard/overview",
+        `${API_URL}/commandes/dashboard/overview`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

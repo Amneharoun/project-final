@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
-
-const API_URL = "http://localhost:5000/factures";
+import API_URL from "../config";
 
 const Factures = () => {
   const [factures, setFactures] = useState([]);
@@ -25,7 +24,7 @@ const Factures = () => {
 
   const fetchFactures = async () => {
     try {
-      const res = await axios.get(API_URL);
+      const res = await axios.get(`${API_URL}/factures`);
       setFactures(res.data);
     } catch (err) {
       console.error("Erreur chargement factures:", err);
@@ -37,9 +36,9 @@ const Factures = () => {
     e.preventDefault();
     try {
       if (currentFacture) {
-        await axios.put(`${API_URL}/${currentFacture._id}`, form);
+        await axios.put(`${`${API_URL}/factures`}/${currentFacture._id}`, form);
       } else {
-        await axios.post(API_URL, form);
+        await axios.post(`${API_URL}/factures`, form);
       }
       fetchFactures();
       setShowModal(false);
@@ -52,7 +51,7 @@ const Factures = () => {
   const handleDelete = async (id) => {
     if (window.confirm("Voulez-vous vraiment supprimer cette facture ?")) {
       try {
-        await axios.delete(`${API_URL}/${id}`);
+        await axios.delete(`${`${API_URL}/factures`}/${id}`);
         fetchFactures();
       } catch (err) {
         console.error("Erreur suppression:", err);

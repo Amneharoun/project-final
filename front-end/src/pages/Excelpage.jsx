@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import API_URL from "../config";
 
 export default function ExcelPage() {
   const [file, setFile] = useState(null);
@@ -17,7 +18,7 @@ export default function ExcelPage() {
     formData.append("file", file);
 
     try {
-      const res = await axios.post("http://localhost:5000/excel/import-medicaments", formData, {
+      const res = await axios.post(`${API_URL}/commandes/excel/import-medicaments`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setMessage(res.data.message + " (" + res.data.count + " lignes)");
@@ -28,7 +29,7 @@ export default function ExcelPage() {
 
   // Exporter
   const handleExport = () => {
-    window.location.href = "http://localhost:5000/excel/export-medicaments";
+    window.location.href = `${API_URL}/commandes/excel/export-medicaments`;
   };
 
   return (
