@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../utils/api';
 import './register.css';
-import API_URL from '../config';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -27,35 +27,24 @@ const Register = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}/auth/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...form,
-          role: form.role.toLowerCase(), // toujours en minuscule
-          email: form.email.toLowerCase(), // éviter doublons
-        }),
+      const response = await api.post('/auth/register', {
+        ...form,
+        role: form.role.toLowerCase(), // toujours en minuscule
+        email: form.email.toLowerCase(), // éviter doublons
       });
 
-      const data = await response.json();
+      const data = response.data;
 
-      if (response.ok) {
-        setMessage('Compte créé avec succès ! Vérifiez vos emails pour valider le compte.');
-        // setTimeout(() => navigate(`/verify?otpToken=${data.otpToken}`), 1000);
+      setMessage('Compte créé avec succès ! Vérifiez vos emails pour valider le compte.');
 
-        localStorage.setItem("otpToken", data.otpToken);
-        console.log("OTP Token:", localStorage.getItem("otpToken"));
-        
-        //  après validation OTP → login
-        setTimeout(() => navigate('/verify'), 1500);
-      } else {
-        setMessage(data.message || "Erreur lors de l'inscription");
-      }
+      localStorage.setItem("otpToken", data.otpToken);
+      console.log("OTP Token:", localStorage.getItem("otpToken"));
+      
+      // après validation OTP → login
+      setTimeout(() => navigate('/verify'), 1500);
     } catch (error) {
       console.error('Erreur Register:', error);
-      setMessage('Erreur serveur. Veuillez réessayer.');
+      setMessage(error.response?.data?.message || "Erreur lors de l'inscription");
     } finally {
       setLoading(false);
     }
@@ -94,7 +83,7 @@ const Register = () => {
           <option value="pharmacien">Pharmacien</option>
           <option value="admin">Admin</option>
           <option value="caissier">Caissier</option>
-          <option value="patient">patient</option>
+          <option value="patient">Patient</option>
         </select>
 
         <button type="submit" className='btn btn-primary' disabled={loading}>

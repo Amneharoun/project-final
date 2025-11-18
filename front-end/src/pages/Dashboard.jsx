@@ -1,7 +1,5 @@
-// src/pages/Dashboard.jsx
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import API_URL from "../config";
+import api from "../utils/api";
 
 export default function Dashboard() {
   const [data, setData] = useState(null);
@@ -14,19 +12,12 @@ export default function Dashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(
-        `${API_URL}/commandes/dashboard/overview`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      console.log(" Données RÉELLES reçues:", response.data);
+      const response = await api.get(`/dashboard/overview`);
+      console.log("✅ Données RÉELLES reçues:", response.data);
       setData(response.data);
       setError("");
     } catch (err) {
-      console.error(" Erreur:", err);
+      console.error("❌ Erreur:", err);
       setError("Erreur de chargement des données");
     } finally {
       setLoading(false);
@@ -64,7 +55,6 @@ export default function Dashboard() {
     );
   }
 
-  // Données RÉELLES du backend
   const {
     lowStockCount = 0,
     expiringCount = 0,
@@ -99,8 +89,8 @@ export default function Dashboard() {
         <div className="col-md-3 mb-3">
           <div className="card border-success">
             <div className="card-body text-center">
-              <h5 className="card-title "> 30j</h5>
-              <h3>{revenue30d}FCA</h3>
+              <h5 className="card-title">💰 30j</h5>
+              <h3>{revenue30d} FCFA</h3>
               <small className="text-muted">Chiffre d'affaires</small>
             </div>
           </div>
@@ -120,9 +110,7 @@ export default function Dashboard() {
           <div className="card border-warning">
             <div className="card-body text-center">
               <h5 className="card-title text-warning">
-                {" "}
-                <i class="bi bi-exclamation-triangle text-danger"></i> Stock
-                faible
+                <i className="bi bi-exclamation-triangle text-danger"></i> Stock faible
               </h5>
               <h3>{lowStockCount}</h3>
               <small className="text-muted">Stock ≤ 5</small>
@@ -148,7 +136,7 @@ export default function Dashboard() {
           <div className="card border-danger h-100">
             <div className="card-header bg-danger text-white">
               <h6 className="mb-0">
-                <i class="bi bi-heartbreak"></i> Rupture de stock
+                <i className="bi bi-heartbreak"></i> Rupture de stock
                 <span className="badge bg-light text-dark ms-2">
                   {ruptureCount}
                 </span>
@@ -179,8 +167,7 @@ export default function Dashboard() {
           <div className="card border-warning h-100">
             <div className="card-header bg-warning text-dark">
               <h6 className="mb-0">
-                <i class="bi bi-exclamation-triangle text-danger"></i> Stock
-                faible
+                <i className="bi bi-exclamation-triangle text-danger"></i> Stock faible
                 <span className="badge bg-light text-dark ms-2">
                   {lowStockCount}
                 </span>
@@ -202,7 +189,7 @@ export default function Dashboard() {
                   ))}
                 </div>
               ) : (
-                <p className="text-muted text-center mb-0"> Stock normal</p>
+                <p className="text-muted text-center mb-0">✅ Stock normal</p>
               )}
             </div>
           </div>
@@ -213,7 +200,7 @@ export default function Dashboard() {
           <div className="card border-info h-100">
             <div className="card-header bg-info text-white">
               <h6 className="mb-0">
-                <i class="bi bi-calendar"></i> Bientôt périmés
+                <i className="bi bi-calendar"></i> Bientôt périmés
                 <span className="badge bg-light text-dark ms-2">
                   {expiringCount}
                 </span>
@@ -235,7 +222,7 @@ export default function Dashboard() {
                   ))}
                 </div>
               ) : (
-                <p className="text-muted text-center mb-0"> Aucun risque</p>
+                <p className="text-muted text-center mb-0">✅ Aucun risque</p>
               )}
             </div>
           </div>

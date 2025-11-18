@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import 'bootstrap/dist/css/bootstrap.min.css';
-
-import API_URL from '../config';
+import api from '../utils/api';
 
 const VerifyOtp = () => {
   const [otp, setOtp] = useState('');
-  //   const [otpToken, setOtpToken] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -18,27 +15,21 @@ const VerifyOtp = () => {
 
     try {
       const otpToken = localStorage.getItem("otpToken");
-      const response = await fetch(`${API_URL}/auth/email-verify`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          otp,
-          otpToken,
-          purpose: 'verify-email',
-        }),
+      
+      const response = await api.patch('/auth/email-verify', {
+        otp,
+        otpToken,
+        purpose: 'verify-email',
       });
 
-      const data = await response.json();
+      const data = response.data;
+      console.log(data.message);      
 
-      if (response.ok) {
-        setMessage('Vérification réussie ! Vous pouvez maintenant vous connecter.');
-        setTimeout(() => navigate('/login'), 1500);
-      } else {
-        setMessage(`${data.message || "Erreur de vérification"}`);
-      }
+      setMessage('Vérification réussie ! Vous pouvez maintenant vous connecter.');
+      setTimeout(() => navigate('/login'), 1500);
     } catch (error) {
       console.error('Erreur Verify:', error);
-      setMessage('Erreur serveur. Veuillez réessayer.');
+      setMessage(error.response?.data?.message || "Erreur de vérification");
     } finally {
       setLoading(false);
     }
@@ -70,19 +61,6 @@ const VerifyOtp = () => {
                 required
               />
             </div>
-
-            {/* <div className="mb-3">
-              <label htmlFor="otpToken" className="form-label">Token reçu (otpToken)</label>
-              <input
-                type="text"
-                id="otpToken"
-                className="form-control"
-                placeholder="Entrez le token reçu"
-                value={otpToken}
-                onChange={(e) => setOtpToken(e.target.value)}
-                required
-              />
-            </div> */}
 
             <button type="submit" className="btn btn-primary w-100" disabled={loading}>
               {loading ? 'Vérification...' : 'Vérifier'}

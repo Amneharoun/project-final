@@ -15,7 +15,6 @@ export const AuthProvider = ({ children }) => {
         setRole(decoded.role);
         setUser(decoded.email);
         setIsAuthenticated(true);
-        
       } catch (err) {
         console.error("Invalid token:", err);
         localStorage.clear();
@@ -30,12 +29,24 @@ export const AuthProvider = ({ children }) => {
     }
   };
   
+  // ✅ CORRECTION : Enlever user et role des dépendances pour éviter la boucle infinie
   useEffect(() => {
     loadUserFromToken();
     window.addEventListener("storage", loadUserFromToken);
-    console.log(`User authenticated successfully with email ${user} and role ${role}`);
+    
+    // ✅ Log uniquement au premier chargement
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        console.log(`User authenticated successfully with email ${decoded.email} and role ${decoded.role}`);
+      } catch (err) {
+        console.error("Error reading token:", err);
+      }
+    }
+    
     return () => window.removeEventListener("storage", loadUserFromToken);
-  }, [user, role]);
+  }, []); // ✅ Tableau de dépendances vide
 
   const login = (token) => {
     localStorage.setItem("token", token);

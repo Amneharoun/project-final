@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import api from "../utils/api";
 import API_URL from "../config";
 
 export default function ExcelPage() {
@@ -18,7 +18,7 @@ export default function ExcelPage() {
     formData.append("file", file);
 
     try {
-      const res = await axios.post(`${API_URL}/commandes/excel/import-medicaments`, formData, {
+      const res = await api.post(`/excel/import-medicaments`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setMessage(res.data.message + " (" + res.data.count + " lignes)");
@@ -34,7 +34,7 @@ export default function ExcelPage() {
 
   return (
     <div className="container mt-5">
-      <h3><i class="bi bi-cloud-arrow-up"></i> Import / Export Excel (Médicaments)</h3>
+      <h3><i className="bi bi-cloud-arrow-up"></i> Import / Export Excel (Médicaments)</h3>
 
       <div className="mb-3">
         <input type="file" className="form-control" accept=".xlsx, .xls" onChange={handleFileChange} />

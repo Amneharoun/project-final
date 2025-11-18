@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../utils/api";
 import "bootstrap/dist/css/bootstrap.min.css";
-import API_URL from "../config";
 
 const Factures = () => {
   const [factures, setFactures] = useState([]);
@@ -17,28 +16,26 @@ const Factures = () => {
 
   const [form, setForm] = useState(initialForm);
 
-  // ✅ Charger factures depuis backend
   useEffect(() => {
     fetchFactures();
   }, []);
 
   const fetchFactures = async () => {
     try {
-      const res = await axios.get(`${API_URL}/factures`);
+      const res = await api.get(`/factures`);
       setFactures(res.data);
     } catch (err) {
       console.error("Erreur chargement factures:", err);
     }
   };
 
-  // ➕ Ajouter ou Modifier
   const handleSave = async (e) => {
     e.preventDefault();
     try {
       if (currentFacture) {
-        await axios.put(`${`${API_URL}/factures`}/${currentFacture._id}`, form);
+        await api.put(`/factures/${currentFacture._id}`, form);
       } else {
-        await axios.post(`${API_URL}/factures`, form);
+        await api.post(`/factures`, form);
       }
       fetchFactures();
       setShowModal(false);
@@ -47,11 +44,10 @@ const Factures = () => {
     }
   };
 
-  // 🗑️ Supprimer
   const handleDelete = async (id) => {
     if (window.confirm("Voulez-vous vraiment supprimer cette facture ?")) {
       try {
-        await axios.delete(`${`${API_URL}/factures`}/${id}`);
+        await api.delete(`/factures/${id}`);
         fetchFactures();
       } catch (err) {
         console.error("Erreur suppression:", err);
@@ -59,21 +55,18 @@ const Factures = () => {
     }
   };
 
-  // ✏️ Ouvrir modal modification
   const handleEdit = (facture) => {
     setForm(facture);
     setCurrentFacture(facture);
     setShowModal(true);
   };
 
-  // ➕ Ouvrir modal ajout
   const handleAdd = () => {
     setForm(initialForm);
     setCurrentFacture(null);
     setShowModal(true);
   };
 
-  // 📄 Impression
   const handlePrint = (facture) => {
     const printContent = `
       <h3>Facture #${facture._id}</h3>
@@ -113,7 +106,6 @@ const Factures = () => {
     w.print();
   };
 
-  // ➕ Articles
   const addItem = () =>
     setForm({
       ...form,

@@ -1,11 +1,11 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import API_URL from "../config";
+import api from "../utils/api";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext); // ✅ Use context login function
+  const { login } = useContext(AuthContext);
   const [form, setForm] = useState({ email: "", password: "" });
   const [message, setMessage] = useState("");
   const [forgotEmail, setForgotEmail] = useState("");
@@ -22,64 +22,51 @@ const Login = () => {
   };
 
   const handleLogin = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setMessage("");
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
 
-  try {
-    const response = await fetch(`${API_URL}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
+    try {
+      const response = await api.post("/auth/login", form);
+      const data = response.data;
 
-    const data = await response.json();
-
-    if (response.ok) {
-      // ✅ Sauvegarde du token et du rôle
+      // Sauvegarde du token et du rôle
       login(data.token);
       localStorage.setItem("role", data.role);
 
       setMessage("Connexion réussie !");
       console.log("Connexion réussie !");
 
-      // ✅ Redirection selon le rôle
+      // Redirection selon le rôle
       if (data.role === "patient") {
         navigate("/medicament");
       } else {
         navigate("/dashboard");
       }
-    } else {
-      setMessage(data.message || "Erreur lors de la connexion");
+    } catch (err) {
+      console.error(err);
+      setMessage(err.response?.data?.message || "Erreur lors de la connexion");
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    console.error(err);
-    setMessage("Erreur serveur. Veuillez réessayer.");
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   const handleForgotPassword = async () => {
     if (!forgotEmail) return setMessage("Veuillez saisir votre email.");
 
     try {
-      const response = await fetch(`${API_URL}/auth/forgot-password`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: forgotEmail }),
+      const response = await api.post("/auth/forgot-password", { 
+        email: forgotEmail 
       });
-
-      const data = await response.json();
+      const data = response.data;
+      
       localStorage.setItem("otpToken", data.otpToken);
-
       setMessage(data.message || "Si l'email existe, un lien a été envoyé.");
       setShowForgotModal(false);
       setTimeout(() => navigate("/reset-password"), 1500);
     } catch (err) {
       console.error(err);
-      setMessage("Erreur serveur. Veuillez réessayer.");
+      setMessage(err.response?.data?.message || "Erreur serveur. Veuillez réessayer.");
     }
   };
 

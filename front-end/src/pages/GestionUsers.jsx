@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import API_URL from "../config";
+import api from "../utils/api";
 
 export default function GestionUsers() {
   const [utilisateurs, setUtilisateurs] = useState([]);
@@ -20,9 +19,7 @@ export default function GestionUsers() {
 
   const fetchUtilisateurs = async () => {
     try {
-      const response = await axios.get(`${API_URL}/gestion-users`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
+      const response = await api.get(`/gestion-users`);
       setUtilisateurs(response.data);
     } catch (error) {
       console.error("Erreur lors du chargement des utilisateurs:", error);
@@ -33,19 +30,9 @@ export default function GestionUsers() {
     e.preventDefault();
     try {
       if (editMode) {
-        await axios.put(
-          `${API_URL}/gestion-users/${currentUser._id}`,
-          formData,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
+        await api.put(`/gestion-users/${currentUser._id}`, formData);
       } else {
-        await axios.post(`${API_URL}/gestion-users/`, formData, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
+        await api.post(`/gestion-users/`, formData);
       }
       fetchUtilisateurs();
       resetForm();
@@ -72,9 +59,7 @@ export default function GestionUsers() {
       window.confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur ?")
     ) {
       try {
-        await axios.delete(`${API_URL}/gestion-users/${id}`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
+        await api.delete(`/gestion-users/${id}`);
         fetchUtilisateurs();
       } catch (error) {
         console.error("Erreur lors de la suppression:", error);

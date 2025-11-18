@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import API_URL from "../config";
+import api from "../utils/api";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -13,22 +13,13 @@ const ForgotPassword = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}/auth/forgot-password`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
+      const response = await api.post("/auth/forgot-password", { email });
+      const data = response.data;
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setMessage(`OTP envoyé à ${email}. Token: ${data.otpToken}`);
-      } else {
-        setMessage(data.message || "Erreur lors de l'envoi de l'email");
-      }
+      setMessage(`OTP envoyé à ${email}. Token: ${data.otpToken}`);
     } catch (err) {
       console.error(err);
-      setMessage("Erreur serveur, réessayez plus tard.");
+      setMessage(err.response?.data?.message || "Erreur lors de l'envoi de l'email");
     } finally {
       setLoading(false);
     }

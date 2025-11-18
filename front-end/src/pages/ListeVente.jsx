@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import API_URL from "../config";
+import api from "../utils/api";
 
 const ListeVentes = () => {
   const [ventes, setVentes] = useState([]);
 
   useEffect(() => {
-    axios
-      .get(`${API_URL}/ventes/getventes`)
+    api
+      .get(`/ventes/getventes`)
       .then((res) => setVentes(res.data))
       .catch((err) => console.error("Erreur chargement ventes :", err));
   }, []);
@@ -40,7 +39,7 @@ const ListeVentes = () => {
             ventes.flatMap((vente) =>
               vente.medicaments.map((m, index) => (
                 <tr key={`${vente._id}-${index}`}>
-                  {/* ✅ Afficher la date et le client seulement sur la 1ère ligne */}
+                  {/* Afficher la date et le client seulement sur la 1ère ligne */}
                   {index === 0 && (
                     <>
                       <td rowSpan={vente.medicaments.length}>

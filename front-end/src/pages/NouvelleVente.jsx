@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import API_URL from "../config";
+import api from "../utils/api";
 
 const NouvelleVente = () => {
   const [clients, setClients] = useState([]);
@@ -13,28 +12,12 @@ const NouvelleVente = () => {
 
   const [message, setMessage] = useState("");
 
-  // 🔹 Charger les clients et médicaments
+  // Charger les clients et médicaments
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const resClients = await axios.get(
-          `${API_URL}/clients/1/1000`,
-          {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-        );
-        const resMeds = await axios.get(
-          `${API_URL}/medicaments/1/1000`,
-          {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-        );
+        const resClients = await api.get(`/clients/list/1/1000`);
+        const resMeds = await api.get(`/medicaments/list/1/1000`);
         setClients(resClients.data.docs || []);
         setMedicaments(resMeds.data.docs || []);
       } catch (error) {
@@ -44,7 +27,7 @@ const NouvelleVente = () => {
     fetchData();
   }, []);
 
-  // 🔹 Ajouter un médicament à la vente
+  // Ajouter un médicament à la vente
   const ajouterMedicament = () => {
     setVente({
       ...vente,
@@ -55,7 +38,7 @@ const NouvelleVente = () => {
     });
   };
 
-  // 🔹 Gérer les changements
+  // Gérer les changements
   const handleMedicamentChange = (index, field, value) => {
     const updated = [...vente.medicaments];
 
@@ -69,46 +52,20 @@ const NouvelleVente = () => {
     setVente({ ...vente, medicaments: updated });
   };
 
-  // 🔹 Soumettre la vente
+  // Soumettre la vente
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       console.log(vente);
 
-      const res = await axios.post(
-        `${API_URL}/ventes/ventes`,
-        vente,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const res = await api.post(`/ventes/ventes`, vente);
       setMessage("✅ Vente enregistrée avec succès !");
       console.log("Nouvelle Vente : ", res.data);
-
-      // ==== Plus besoin de créer une facture, car directement gérer par le backend à l'ajout d'une vente
-      // // Transformer les médicaments en items de facture
-      // const items = res.data.medicaments.map((m) => ({
-      //   description: m.medicament.nom,
-      //   quantite: m.quantite,
-      //   prix: m.prix,
-      // }));
-
-      // // Créer la facture
-      // const resFacture = await axios.post(`${API_URL}/factures", {
-      //   client: res.data.client.nom,
-      //   date: res.data.dateVente,
-      //   items,
-      // });
-      // console.log("Nouvelle Facture : ", resFacture.data);
-      // ====
 
       setVente({ client: "", medicaments: [], reduction: 0 }); // reset
     } catch (error) {
       setMessage(
-        " Erreur: " + (error.response?.data?.message || error.message)
+        "❌ Erreur: " + (error.response?.data?.message || error.message)
       );
     }
   };
@@ -119,7 +76,7 @@ const NouvelleVente = () => {
       {message && <div className="alert alert-info">{message}</div>}
 
       <form onSubmit={handleSubmit}>
-        {/* 🔸 Choix du client */}
+        {/* Choix du client */}
         <div className="mb-3">
           <label className="form-label">Client</label>
           <select
@@ -137,7 +94,7 @@ const NouvelleVente = () => {
           </select>
         </div>
 
-        {/* 🔸 Liste des médicaments */}
+        {/* Liste des médicaments */}
         {vente.medicaments.map((item, index) => (
           <div key={index} className="row mb-2 align-items-center">
             <div className="col-md-4">
@@ -176,24 +133,6 @@ const NouvelleVente = () => {
               />
             </div>
 
-            {/* <div className="col-md-2">
-              <input
-                type="number"
-                className="form-control"
-                placeholder="Prix (fcfa)"
-                min="0"
-                value={item.prix || ""}
-                onChange={(e) =>
-                  handleMedicamentChange(
-                    index,
-                    "prix",
-                    parseFloat(e.target.value) || 0
-                  )
-                }
-                required
-              />
-            </div> */}
-
             <div className="col-md-2">
               <input
                 type="number"
@@ -214,7 +153,7 @@ const NouvelleVente = () => {
           </div>
         ))}
 
-        {/* 🔸 Bouton pour ajouter un médicament */}
+        {/* Bouton pour ajouter un médicament */}
         <button
           type="button"
           className="btn btn-secondary mb-3"
@@ -224,7 +163,7 @@ const NouvelleVente = () => {
         </button>
 
         <div>
-          {/* 🔸 Soumettre */}
+          {/* Soumettre */}
           <button type="submit" className="btn btn-success">
             Enregistrer la vente
           </button>

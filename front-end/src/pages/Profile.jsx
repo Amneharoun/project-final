@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import API_URL from "../config";
+import api from "../utils/api";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    axios
-      .get(`${API_URL}/auth/profile`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-      })
+    api
+      .get(`/auth/profile`)
       .then((res) => setUser(res.data))
       .catch((err) => console.error("Erreur profil:", err));
   }, []);
@@ -19,7 +16,7 @@ export default function Profile() {
   return (
     <div className="container mt-4">
       <div className="card shadow-sm p-4">
-        <h3 className="mb-3"><i class="bi bi-person-fill"></i> Mon Profil</h3>
+        <h3 className="mb-3"><i className="bi bi-person-fill"></i> Mon Profil</h3>
         <p><strong>Nom :</strong> {user.nom}</p>
         <p><strong>Email :</strong> {user.email}</p>
         <p><strong>Rôle :</strong> {user.role}</p>

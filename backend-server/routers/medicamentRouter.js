@@ -62,7 +62,7 @@ router.get("/alertes", alertesMedicaments);
 router.get("/export", exportExcel);
 
 // ✅ Lecture : pour tous les utilisateurs connectés
-router.get("/:page/:limit", verifyRole("admin", "pharmacien, caissier"),getMedicaments);
+router.get("/list/:page/:limit", verifyRole("admin", "pharmacien", "caissier", "patient"),getMedicaments);
 
 // ✅ Création : admin + pharmacien
 router.post("/", verifyRole("admin", "pharmacien"), addMedicament);

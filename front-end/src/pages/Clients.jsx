@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import API_URL from "../config";
+import api from "../utils/api";
 
 export default function Clients() {
   const [clients, setClients] = useState([]);
@@ -17,9 +16,7 @@ export default function Clients() {
 
   const fetchClients = async (page, limit) => {
     try {
-      const response = await axios.get(
-        `${API_URL}/clients/${page}/${limit}`
-      );
+      const response = await api.get(`/clients/list/${page}/${limit}`);
       console.log("🧾 Réponse backend :", response.data);
 
       const data = response.data;
@@ -34,14 +31,11 @@ export default function Clients() {
     e.preventDefault();
     try {
       if (editingClient) {
-        await axios.put(
-          `${API_URL}/clients/${editingClient._id}`,
-          formData
-        );
+        await api.put(`/clients/${editingClient._id}`, formData);
       } else {
-        await axios.post("`${API_URL}/clients", formData);
+        await api.post(`/clients`, formData);
       }
-      fetchClients(page, limit); // ✅ toujours passer page et limit
+      fetchClients(page, limit);
       resetForm();
     } catch (error) {
       console.error("Erreur lors de la sauvegarde:", error);
@@ -51,7 +45,7 @@ export default function Clients() {
   const handleDelete = async (id) => {
     if (window.confirm("Êtes-vous sûr de vouloir supprimer ce client ?")) {
       try {
-        await axios.delete(`${API_URL}/clients/${id}`);
+        await api.delete(`/clients/${id}`);
         fetchClients(page, limit);
       } catch (error) {
         console.error("Erreur lors de la suppression:", error);
