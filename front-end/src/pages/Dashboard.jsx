@@ -13,11 +13,11 @@ export default function Dashboard() {
   const fetchDashboardData = async () => {
     try {
       const response = await api.get(`/dashboard/overview`);
-      console.log("✅ Données RÉELLES reçues:", response.data);
+      console.log(" Données RÉELLES reçues:", response.data);
       setData(response.data);
       setError("");
     } catch (err) {
-      console.error("❌ Erreur:", err);
+      console.error("Erreur:", err);
       setError("Erreur de chargement des données");
     } finally {
       setLoading(false);
@@ -89,7 +89,7 @@ export default function Dashboard() {
         <div className="col-md-3 mb-3">
           <div className="card border-success">
             <div className="card-body text-center">
-              <h5 className="card-title">💰 30j</h5>
+              <h5 className="card-title">30j</h5>
               <h3>{revenue30d} FCFA</h3>
               <small className="text-muted">Chiffre d'affaires</small>
             </div>
@@ -99,7 +99,7 @@ export default function Dashboard() {
         <div className="col-md-3 mb-3">
           <div className="card border-danger">
             <div className="card-body text-center">
-              <h5 className="card-title text-danger">💊 Ruptures</h5>
+              <h5 className="card-title text-danger">Ruptures</h5>
               <h3>{ruptureCount}</h3>
               <small className="text-muted">Stock = 0</small>
             </div>
@@ -121,7 +121,7 @@ export default function Dashboard() {
         <div className="col-md-3 mb-3">
           <div className="card border-info">
             <div className="card-body text-center">
-              <h5 className="card-title text-info">📅 Péremptions</h5>
+              <h5 className="card-title text-info"> Péremptions</h5>
               <h3>{expiringCount}</h3>
               <small className="text-muted">30 prochains jours</small>
             </div>
@@ -150,13 +150,13 @@ export default function Dashboard() {
                       key={index}
                       className="list-group-item d-flex justify-content-between align-items-center px-0"
                     >
-                      <small>💊 {med.nom}</small>
+                      <small> {med.nom}</small>
                       <span className="badge bg-danger">Rupture</span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-muted text-center mb-0">✅ Aucune rupture</p>
+                <p className="text-muted text-center mb-0"> aucune rupture</p>
               )}
             </div>
           </div>
@@ -181,7 +181,7 @@ export default function Dashboard() {
                       key={index}
                       className="list-group-item d-flex justify-content-between align-items-center px-0"
                     >
-                      <small>💊 {med.nom}</small>
+                      <small> {med.nom}</small>
                       <span className="badge bg-warning text-dark">
                         {med.stock} restants
                       </span>
@@ -189,7 +189,7 @@ export default function Dashboard() {
                   ))}
                 </div>
               ) : (
-                <p className="text-muted text-center mb-0">✅ Stock normal</p>
+                <p className="text-muted text-center mb-0"> Stock normal</p>
               )}
             </div>
           </div>
@@ -214,7 +214,7 @@ export default function Dashboard() {
                       key={index}
                       className="list-group-item d-flex justify-content-between align-items-center px-0"
                     >
-                      <small>💊 {med.nom}</small>
+                      <small> {med.nom}</small>
                       <span className="badge bg-info">
                         {new Date(med.datePeremption).toLocaleDateString()}
                       </span>
@@ -222,7 +222,7 @@ export default function Dashboard() {
                   ))}
                 </div>
               ) : (
-                <p className="text-muted text-center mb-0">✅ Aucun risque</p>
+                <p className="text-muted text-center mb-0"> aucun risque</p>
               )}
             </div>
           </div>
@@ -234,7 +234,7 @@ export default function Dashboard() {
         <div className="col-md-6">
           <div className="card">
             <div className="card-header">
-              <h6 className="mb-0">📋 Commande (30j)</h6>
+              <h6 className="mb-0"> Commande (30j)</h6>
             </div>
             <div className="card-body">
               <div className="row text-center">

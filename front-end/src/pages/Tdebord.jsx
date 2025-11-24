@@ -43,7 +43,7 @@ const Dashboard = () => {
 
   return (
     <div className="container mt-4">
-      <h2>👋 Bienvenue {user?.name || "Utilisateur"} !</h2>
+      <h2>Bienvenue {user?.name || "Utilisateur"} !</h2>
       <p>Email : {user?.email}</p>
 
       <div className="row mt-4">

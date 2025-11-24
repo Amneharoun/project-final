@@ -1,5 +1,6 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import api from "../utils/api";
 
@@ -45,6 +46,11 @@ const Login = () => {
       }
     } catch (err) {
       console.error(err);
+      // const errorMessage =  + `${
+      // <Link className="navbar-brand fw-bold d-flex align-items-center" to="/verify">
+      //     Vérifier mon email
+      //   </Link>
+      // }`
       setMessage(err.response?.data?.message || "Erreur lors de la connexion");
     } finally {
       setLoading(false);
@@ -55,18 +61,20 @@ const Login = () => {
     if (!forgotEmail) return setMessage("Veuillez saisir votre email.");
 
     try {
-      const response = await api.post("/auth/forgot-password", { 
-        email: forgotEmail 
+      const response = await api.post("/auth/forgot-password", {
+        email: forgotEmail,
       });
       const data = response.data;
-      
+
       localStorage.setItem("otpToken", data.otpToken);
       setMessage(data.message || "Si l'email existe, un lien a été envoyé.");
       setShowForgotModal(false);
       setTimeout(() => navigate("/reset-password"), 1500);
     } catch (err) {
       console.error(err);
-      setMessage(err.response?.data?.message || "Erreur serveur. Veuillez réessayer.");
+      setMessage(
+        err.response?.data?.message || "Erreur serveur. Veuillez réessayer."
+      );
     }
   };
 
@@ -77,7 +85,17 @@ const Login = () => {
           <div className="card shadow">
             <div className="card-body">
               <h3 className="card-title mb-4 text-center">Connexion</h3>
-              {message && <div className="alert alert-info">{message}</div>}
+              {message && (
+                <div className="alert alert-danger">
+                  {message}
+                  <Link
+                    className="navbar-brand fw-bold d-flex align-items-center"
+                    to="/verify"
+                  >
+                    Vérifier mon email
+                  </Link>
+                </div>
+              )}
               <form onSubmit={handleLogin}>
                 <div className="mb-3">
                   <label className="form-label">Email</label>
@@ -104,7 +122,11 @@ const Login = () => {
                 </div>
 
                 <div className="d-flex justify-content-between align-items-center mb-5">
-                  <button type="submit" className="btn btn-primary" disabled={loading}>
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                    disabled={loading}
+                  >
                     {loading ? "Connexion..." : "Se connecter"}
                   </button>
                   <button
@@ -168,7 +190,10 @@ const Login = () => {
                 >
                   Annuler
                 </button>
-                <button className="btn btn-primary" onClick={handleForgotPassword}>
+                <button
+                  className="btn btn-primary"
+                  onClick={handleForgotPassword}
+                >
                   Envoyer le lien
                 </button>
               </div>
