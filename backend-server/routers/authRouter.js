@@ -6,7 +6,7 @@ const router = express.Router();
 // crer un route
 router.post("/register", register);
 router.post("/login", login);
-router.patch("/email-verify", verify)
+router.patch("/email-verify", verify);
 router.post("/forgot-password", forgotPassword);
 router.patch("/reset-password", resetPassword);
 

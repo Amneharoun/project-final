@@ -120,6 +120,12 @@ const login = async (req, res) => {
     return res.status(404).send({ message: "Utilisateur non trouvé" });
   }
 
+  if (!user.isVerified) {
+    return res.status(403).json({
+      message: "Veuillez vérifier votre email avant de vous connecter.",
+    });
+  }
+
   const isPasswordCorrect = await bcrypt.compare(password, user.password);
   if (!isPasswordCorrect) {
     return res.status(401).send({ message: "Identifiants incorrects" });
@@ -168,11 +174,11 @@ const forgotPassword = async (req, res) => {
       to: user.email,
       subject: "Réinitialisation de mot de passe",
       html: `
-        <h1>Réinitialisation de mot de passe</h1>
-        <div>
-            Utilisez ce code pour réinitialiser votre mot de passe:<br>
-            <strong>${otp}</strong>
-        </div>`,
+          <h1>Réinitialisation de mot de passe</h1>
+          <div>
+              Utilisez ce code pour réinitialiser votre mot de passe:<br>
+              <strong>${otp}</strong>
+          </div>`,
     });
 
     res.json({
